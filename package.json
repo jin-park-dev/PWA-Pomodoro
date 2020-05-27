@@ -1,0 +1,22 @@
+{
+  "name": "pomotimer-plusplus",
+  "version": "0.0.1",
+  "private": true,
+  "devDependencies": {
+    "autoprefixer": "^9.8.0",
+    "postcss-cli": "^7.1.1",
+    "shadow-cljs": "2.9.10",
+    "tailwindcss": "^1.4.6"
+  },
+  "dependencies": {
+    "react": "^16.13.0",
+    "react-dom": "16.13.0",
+    "react-router-dom": "^5.2.0"
+  },
+  "scripts": {
+    "start": "npm run watch:css && npm run start:shadow",
+    "start:shadow": "shadow-cljs -d cider/piggieback:0.4.2 -d cider/cider-nrepl:0.24.0 watch :app",
+    "build:css": "postcss src/assets/tailwind_config.css -o public/css/tailwind.css",
+    "watch:css": "postcss src/assets/tailwind_config.css -o public/css/tailwind.css"
+  }
+}
