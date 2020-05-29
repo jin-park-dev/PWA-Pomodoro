@@ -28,15 +28,15 @@
        [:> NavLink {:to "/"
                     :active-class-name "border-blue-500 bg-blue-500 text-white hover:text-black"
                     :exact true
-                    :class "inline-block border border-white rounded hover:border-blue-200 hover:bg-blue-200 py-1 px-3"} "Home"]]
+                    :class "inline-block border border-white rounded hover:border-blue-200 hover:bg-blue-200 no-underline py-1 px-3"} "Home"]]
       [:li.mr-6
        [:> NavLink {:to "/pomodoro/"
                     :activeClassName "border-blue-500 bg-blue-500 text-white hover:text-black"
-                    :class "inline-block border border-white rounded hover:border-blue-200 hover:bg-blue-200 py-1 px-3"} "Users"]]
+                    :class "inline-block border border-white rounded hover:border-blue-200 hover:bg-blue-200 no-underline py-1 px-3"} "Pomodoro"]]
       [:li.mr-6
        [:> NavLink {:to "/clock/"
                     :activeClassName "border-blue-500 bg-blue-500 text-white hover:text-black"
-                    :class "inline-block border border-white rounded hover:border-blue-200 hover:bg-blue-200 py-1 px-3"} "Clock"]]
+                    :class "inline-block border border-white rounded hover:border-blue-200 hover:bg-blue-200 no-underline py-1 px-3"} "Clock"]]
       ]]
 
     [:> Route {:path "/" :exact true :component IndexPageContainer}]

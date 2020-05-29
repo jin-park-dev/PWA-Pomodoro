@@ -9,6 +9,7 @@
     "tailwindcss": "^1.4.6"
   },
   "dependencies": {
+    "date-fns": "^2.14.0",
     "react": "^16.13.0",
     "react-dom": "16.13.0",
     "react-router-dom": "^5.2.0"

@@ -6,7 +6,8 @@
 
 (defn index-panel []
   [:div
-   [:h1 "index panel"]])
+   [:h1 "index panel"]
+   ])
 
 (defn index-page-container []
   [:div

@@ -6,7 +6,12 @@
 
 (defn pomodoro-panel []
   [:div
-   [:h1 "pomodoro panel"]])
+   [:h1 "pomodoro panel"]
+   [:div
+    ]
+   [:div]
+   [:div]
+   ])
 
 (defn pomodoro-page-container []
   [:div
