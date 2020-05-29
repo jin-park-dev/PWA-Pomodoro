@@ -3,6 +3,14 @@
    [reagent.core :as reagent]
    [date-fns :as date-fns]))
 
+; See https://date-fns.org/docs/format for formatting of date
+
+; Found with-let here - https://stackoverflow.com/questions/30280484/making-a-simple-countdown-timer-with-clojure-reagent
+; Also with-let info - https://php.developreference.com/article/18539443/Making+a+simple+countdown+timer+with+Clojure+Reagent
+; Other people also had this issue with clearInterval - https://clojurians-log.clojureverse.org/clojurescript/2017-12-01
+; Books below don't even clearInterval?!?
+;   https://books.google.co.uk/books?id=_pY3DwAAQBAJ&pg=PA160&lpg=PA160&dq=clojurescript++setInterval&source=bl&ots=pT8NVkJUIg&sig=ACfU3U00P648pTXqo2h6c75U_dKSOIt2sA&hl=en&sa=X&ved=2ahUKEwi76fuXrtnpAhWRlFwKHW9sCTwQ6AEwBXoECAsQAQ#v=onepage&q=clearInterval&f=false
+
 ; Turns out reagent has it's own way of doing it regarding issue with assigning variable and destruction that's not done JS way (and form3 isn't requried)
 ; Replaces, "create-class :component-did-mount / :component-will-unmount pattern" - https://www.reddit.com/r/Clojurescript/comments/5htkbc/how_to_use_the_withlet_macro_in_reagent_060/
 #_(defn clock-form3 []
@@ -20,7 +28,6 @@
                               [:div "Time: " (date-fns/format @time-now "h:mm:ss aaa")]])})))
 
 ; with-let seems only need form-1 or is it form-2 ??? - https://github.com/reagent-project/reagent/issues/378
-; Found with-let here - https://stackoverflow.com/questions/30280484/making-a-simple-countdown-timer-with-clojure-reagent
 (defn clock-simple []
   (reagent/with-let [time-now (reagent/atom (.now js/Date))
                      timer-fn (js/setInterval #(reset! time-now (.now js/Date)) 500)
@@ -33,32 +40,21 @@
                     
     (finally (js/clearInterval timer-fn))))
 
+; With each hour/min/seconds time pulled out it can be more styled
 (defn clock-styled []
   (reagent/with-let [time-now (reagent/atom (.now js/Date))
                      timer-fn (js/setInterval #(reset! time-now (.now js/Date)) 500)
                      state (reagent/atom {:currently-unused ""})]
 
-    [:div#clock-styled.flex.flex-row
+    [:div#clock-styled.flex.flex-row.text-3xl
      [:div (date-fns/format @time-now "h")]
      [:div ":"]
      [:div (date-fns/format @time-now "mm")]
      [:div ":"]
      [:div.mr-1 (date-fns/format @time-now "ss")]
-     [:div (date-fns/format @time-now "aaa")]
-     ]
-                    
-    (finally (js/clearInterval timer-fn))))
+     [:div (date-fns/format @time-now "aaa")]]
 
-(defn counting-button-in-form3 [txt]
-  (let [state (reagent/atom 0)]
-    (reagent/create-class
-     {:reagent-render  ; This one is REQUIRED. Only one that is required.
-      (fn [txt]
-        [:button
-         {:class "bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
-          :on-click (fn [e]
-                      (swap! state (fn [a] (+ a 2))))}
-         (str txt " - " @state)])})))
+    (finally (js/clearInterval timer-fn))))
 
 (defn clock-panel []
   [:div
@@ -67,13 +63,16 @@
   ;  [clock-simple]
    [:h2 "Clock Styled"]
    [clock-styled]
-  ;  (date-fns/format (.getTime (js/Date.)) "MM/dd/yyyy")
-  ;  [:br]
-  ;  (date-fns/format (.now js/Date) "MM/dd/yyyy")
    ])
 
 (defn clock-page-container []
   [:div
    [:h1 "clock Container"]
-   [clock-panel]]
+   [clock-panel]])
+
+(comment
+  ; usage of js date-fns package
+  (date-fns/format (.getTime (js/Date.)) "MM/dd/yyyy")
+  (date-fns/format (.now js/Date) "MM/dd/yyyy")
+  (date-fns/format (.now js/Date) "h:mm:ss aaa")
   )

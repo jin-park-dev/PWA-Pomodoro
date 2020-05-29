@@ -10,7 +10,7 @@
     ;; don't need the :refer or :rename
     ;; could just use :as router and then [:> router/Link ...]
     ;; just wanted to match the JS example
-   ["react-router-dom" :refer (Route Link NavLink BrowserRouter)]
+   ["react-router-dom" :refer (Route NavLink BrowserRouter)]
    ["react-router-dom" :as react-router-dom]
    ))
 

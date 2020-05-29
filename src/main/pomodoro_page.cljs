@@ -23,5 +23,4 @@
 (defn pomodoro-page-container []
   [:div
    [:h1 "pomodoro Container"]
-   [pomodoro-panel]]
-  )
+   [pomodoro-panel]])
