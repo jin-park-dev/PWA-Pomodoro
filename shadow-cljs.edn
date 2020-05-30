@@ -6,6 +6,7 @@
 
  :dependencies
  [[reagent "1.0.0-alpha2"] ; Check latest here - https://clojars.org/reagent
+  [stylefy "2.0.0-rc.1"]
   ; [re-frame "RELEASE"] ; Check latest here - https://clojars.org/re-frame
   ;  [cljs-ajax "0.8.0"] ; Check latest here - https://github.com/JulianBirch/cljs-ajax
   ;  [day8.re-frame/http-fx "v0.2.0"] ; Check latest here - https://clojars.org/day8.re-frame/http-fx

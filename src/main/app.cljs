@@ -11,7 +11,8 @@
     ;; could just use :as router and then [:> router/Link ...]
     ;; just wanted to match the JS example
    ["react-router-dom" :refer (Route NavLink BrowserRouter)]
-   ["react-router-dom" :as react-router-dom]
+   
+   [stylefy.core :as stylefy]
    ))
 
 ;; react-router wants react component classes
@@ -51,4 +52,6 @@
 ; Entry point to our app for shadow-cljs system.
 (defn init []
   ; Add other initalization here if needed such as ajax call for inital data
-  (start))
+  (start) ; Reagent (react)
+  (stylefy/init)  ; 
+  )
