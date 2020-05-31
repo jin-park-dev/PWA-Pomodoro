@@ -20,6 +20,10 @@ That way logic to switch in nav are way simpler
 stylefy - https://github.com/Jarzka/stylefy
 (Alternative - https://github.com/dvingo/cljs-styled-components)
 
+Shadow CLJS - https://shadow-cljs.github.io/docs/UsersGuide.html
+Reagent - https://cljdoc.org/d/reagent/reagent/1.0.0-alpha2/doc/tutorials/react-features
+
+
 ### ES6 Import => CLJS Require
 
 See https://shadow-cljs.github.io/docs/UsersGuide.html#_using_npm_packages
@@ -33,7 +37,6 @@ For full table of examples.
 
 ### Links
 
-https://shadow-cljs.github.io/docs/UsersGuide.html
 
 ## Getting Started
 

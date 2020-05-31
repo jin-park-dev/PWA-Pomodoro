@@ -7,10 +7,7 @@
    [pomodoro-page :refer (pomodoro-page-container)]
    [clock-page :refer (clock-page-container)]
    [timer-page :refer (timer-page-container)]
-
-    ;; don't need the :refer or :rename
-    ;; could just use :as router and then [:> router/Link ...]
-    ;; just wanted to match the JS example
+   
    ["react-router-dom" :refer (Route NavLink BrowserRouter)]
    
    [stylefy.core :as stylefy]
