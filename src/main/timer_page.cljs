@@ -4,26 +4,9 @@
    [stylefy.core :as stylefy :refer [use-style]]
    [date-fns :as date-fns]
    [util.time :refer [seconds->duration]]
+   [util.dev :refer [dev-panel]]
    ))
 
-; Temp
-; Better way to get iteration number. Maybe merge in at start?
-(defn dev-panel [states]
-  "Vector of atoms (state)"
-  [:div.bg-teal-200.shadow.p-4.mt-5
-   [:h1.text-4xl.font-bold.mb-2 "Dev-panel"]
-   #_[:div
-    [:h2.text-3xl.mb-2 "state"]
-    [:div
-     (pr-str @states)]]
-   (doall
-    (for [state states
-          :let [counter (atom 0)]]
-      [:div.mt-4 {:key (gensym)}
-       [:h2.text-3xl.mb-2 "state"]
-       [:div
-        (pr-str @state)]]))
-   ])
 
 (defn countup-component []
   (reagent/with-let [seconds-left (reagent/atom 60)
@@ -34,7 +17,7 @@
     (finally (js/clearInterval timer-fn))))
 
 ; TODO: can't put "compound-duration" above in with-let. Atom seems to not get evalutated so need second let? Or anther way?
-; TODO: More control on which unit time when shown
+; TODO: More control on which unit time when shown. But do I really need days?
 (defn timer-simple []
   (reagent/with-let [state (reagent/atom {:start (.now js/Date)
                                           :now (.now js/Date)
@@ -48,7 +31,7 @@
           compound-duration (if (get-in @state [:start?]) compound-duration-filtered {:h 0 :m 0 :s 0})
           ms (when (get-in @state [:start?]) (mod (date-fns/differenceInMilliseconds (get-in @state [:now]) (get-in @state [:start])) 1000))]
       [:div.flex.flex-col.items-center.justify-center.content-center.self-center
-       [:div.flex.flex-row.text-6xl.tracking-wide.leading-none.text-teal-500.text-opacity-100.cursor-pointer
+       [:div.flex.flex-row.text-6xl.tracking-wide.leading-none.text-teal-500.text-opacity-100.cursor-pointer.select-none
         {:on-click #(swap! state update-in [:ms?] not)}
         (doall
          (for [[k v] compound-duration]
@@ -59,11 +42,8 @@
        [:div.flex.flex-row.mt-5.text-xl
         [:button.btn.btn-nav.mr-2 {:on-click #(swap! state assoc-in [:start] (.now js/Date))} "Reset"]
         [:button.btn.btn-nav {:on-click (fn [e]
-                                          #_(swap! state (fn [a] (+ a 2)))
                                           (swap! state update-in [:start?] not)
-                                          (swap! state assoc-in [:start] (.now js/Date))
-                                          )
-                              } 
+                                          (swap! state assoc-in [:start] (.now js/Date)))}
          (if (get-in @state [:start?]) "Stop" "Start")]]
        (when (get-in @state [:dev?]) [dev-panel [state]])])
     (finally (js/clearInterval timer-fn))))

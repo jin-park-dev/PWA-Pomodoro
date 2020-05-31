@@ -25,13 +25,11 @@
    text])
 
 (defn index-panel []
-  [:div
-   [:h1 "index panel"]
-   [button-none-stylefy "button-none-stylefy"]
-   [button-stylefy "button-stylefy"]
-   ])
+  [:div.flex.flex-col.items-center.justify-center
+   [:h1 "Welcome to PWAdoro"]
+   [:p "Simple no nonsense Pomodoro Timer"]
+   [:p "Pomodoro Timer"]])
 
 (defn index-page-container []
-  [:div
-   [:h1 "index Container"]
+  [:div.flex.flex-row.justify-center.h-full
    [index-panel]])

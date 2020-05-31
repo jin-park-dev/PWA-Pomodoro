@@ -1,1 +1,14 @@
 /* Add Any other styles here */
+
+html {
+    height: 100%;
+    overflow: auto;
+}
+
+body {
+    /* min-height: 100%; */
+    height: 100%;
+    overflow: auto;
+    /* background-color: #F5F5F5; */
+    /* background-color: #F8F8FF; */
+}
