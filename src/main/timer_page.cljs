@@ -5,6 +5,7 @@
    [date-fns :as date-fns]))
 
 
+
 ; I need start time
 ; Time now
 ; do Diff to correct/use to show time diff every... x second (500ms?)
@@ -17,16 +18,23 @@
      [:div "Time Remaining: " (str @seconds-left)]]
     (finally (js/clearInterval timer-fn))))
 
-(defn timer-panel []
-  [:div
-   [:h1 "timer panel"]
-   [:h2 "countup-component"]
+(defn timer-simple []
+  (reagent/with-let [seconds-left (reagent/atom 60)
+                     timer-fn     (js/setInterval #(swap! seconds-left inc) 1000)
+                     state {:start nil
+                            :now nil}]
+    [:div
+     [:div "Time Remaining: " (str @seconds-left)]
+     [:div.flex.flex-row
+      [:button.btn.btn-nav.mr-2 "Reset"]
+      [:button.btn.btn-nav "Start"]]
+     ]
+    (finally (js/clearInterval timer-fn)))
+  )
 
-   [countup-component]
-   [:div]
-   [:div]])
+(defn timer-panel []
+  [:div 
+   [timer-simple]])
 
 (defn timer-page-container []
-  [:div
-   [:h1 "timer Container"]
-   [timer-panel]])
+  [:div [timer-panel]])

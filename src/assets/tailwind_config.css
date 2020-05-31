@@ -18,4 +18,32 @@
 
 @tailwind components;
 
+.btn {
+    @apply font-bold py-2 px-4 rounded;
+  }
+
+.btn-nav {
+    @apply bg-white text-gray-800 font-semibold border border-gray-400 rounded shadow;
+}
+.btn-nav:hover {
+    @apply bg-gray-100;
+}
+
+.nav {
+    @apply inline-block border rounded no-underline py-1 px-3;
+}
+.nav-link {
+    @apply border-white;
+}
+.nav-link:hover {
+    @apply bg-blue-200 border-blue-200;
+}
+.nav-link--active {
+    @apply border-blue-500 bg-blue-500 text-white;
+}
+.nav-link--active:hover {
+    @apply text-black;
+}
+
+
 @tailwind utilities;

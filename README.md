@@ -10,6 +10,9 @@ Should be simple UI like google.
 And have More styled version
 Should be APP like, to PWA on phone.
 
+Lets make this simple as possible. E.g Simple-style/Advanced-style over 10 different options.
+That way logic to switch in nav are way simpler
+
 ## Useful
 
 ### Tech docs

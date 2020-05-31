@@ -29,21 +29,21 @@
      [:ul.flex.mb-2
       [:li.mr-6
        [:> NavLink {:to "/"
-                    :active-class-name "border-blue-500 bg-blue-500 text-white hover:text-black"
+                    :active-class-name "nav-link--active"
                     :exact true
-                    :class "inline-block border border-white rounded hover:border-blue-200 hover:bg-blue-200 no-underline py-1 px-3"} "Home"]]
+                    :class "nav nav-link"} "Home"]]
       [:li.mr-6
        [:> NavLink {:to "/clock/"
-                    :activeClassName "border-blue-500 bg-blue-500 text-white hover:text-black"
-                    :class "inline-block border border-white rounded hover:border-blue-200 hover:bg-blue-200 no-underline py-1 px-3"} "Clock"]]
+                    :activeClassName "nav-link--active"
+                    :class "nav nav-link"} "Clock"]]
       [:li.mr-6
        [:> NavLink {:to "/timer/"
-                    :activeClassName "border-blue-500 bg-blue-500 text-white hover:text-black"
-                    :class "inline-block border border-white rounded hover:border-blue-200 hover:bg-blue-200 no-underline py-1 px-3"} "Timer"]]
+                    :activeClassName "nav-link--active"
+                    :class "nav nav-link"} "Timer"]]
       [:li.mr-6
        [:> NavLink {:to "/pomodoro/"
-                    :activeClassName "border-blue-500 bg-blue-500 text-white hover:text-black"
-                    :class "inline-block border border-white rounded hover:border-blue-200 hover:bg-blue-200 no-underline py-1 px-3"} "Pomodoro"]]
+                    :activeClassName "nav-link--active"
+                    :class "nav nav-link"} "Pomodoro"]]
       ]]
 
     [:> Route {:path "/" :exact true :component IndexPageContainer}]

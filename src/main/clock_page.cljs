@@ -47,7 +47,6 @@
   (reagent/with-let [time-now (reagent/atom (.now js/Date))
                      timer-fn (js/setInterval #(reset! time-now (.now js/Date)) 500)
                      state (reagent/atom {:currently-unused ""})]
-
     [:div#clock-styled.flex.flex-row.text-3xl
      [:div (date-fns/format @time-now "h")]
      [:div ":"]
@@ -55,7 +54,7 @@
      [:div ":"]
      [:div.mr-1 (date-fns/format @time-now "ss")]
      [:div (date-fns/format @time-now "aaa")]]
-
+                    
     (finally (js/clearInterval timer-fn))))
 
 (def clock-styled-vue {:font-family "'Share Tech Mono', monospace"
@@ -96,19 +95,15 @@
   [:div  (use-style clock-digital-styled-vue--container-style)
    [clock-digital-styled-vue]])
 
-(defn clock-panel []
-  [:div
-   [:h1 "clock panel"]
-  ;  [:h2 "Clock Simple"]
-  ;  [clock-simple]
-   [:h2 "Clock Styled"]
-   [:div.my-5]
-   [clock-digital-styled-vue--container]])
+(defn clock-panel-nav []
+  (let [nav-styled? (reagent/atom true)]
+    (fn []
+      [:div
+       [:div.mb-5 (if @nav-styled? [:button.btn.btn-nav {:on-click #(swap! nav-styled? not)} "Styled"] [:button.btn.btn-nav {:on-click #(swap! nav-styled? not)} "Clean"])]
+       (if @nav-styled? [clock-digital-styled-vue--container] [clock-digital-styled-basic])])))
 
 (defn clock-page-container []
-  [:div
-   [:h1 "clock Container"]
-   [clock-panel]])
+  [:div [clock-panel-nav]])
 
 (comment
   ; usage of js date-fns package

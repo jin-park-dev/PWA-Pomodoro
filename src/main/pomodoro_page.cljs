@@ -17,10 +17,7 @@
    [:h2 "countdown-component"]
 
    [countdown-component]
-   [:div]
-   [:div]])
+   ])
 
 (defn pomodoro-page-container []
-  [:div
-   [:h1 "pomodoro Container"]
-   [pomodoro-panel]])
+  [:div [pomodoro-panel]])
