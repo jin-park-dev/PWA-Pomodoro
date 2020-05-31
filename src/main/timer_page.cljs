@@ -39,13 +39,14 @@
   (reagent/with-let [state (reagent/atom {:start (.now js/Date)
                                           :now (.now js/Date)
                                           :start? true
-                                          :ms? false})
+                                          :ms? false
+                                          :dev? false}) ; No button currently for dev?
                      timer-fn     (js/setInterval
                                    #(swap! state assoc-in [:now] (.now js/Date)) 70)]  ;refreshed every 70ms. 1000ms = 1sec
     (let [compound-duration-all (seconds->duration (date-fns/differenceInSeconds (get-in @state [:now]) (get-in @state [:start])))
           compound-duration-filtered (dissoc compound-duration-all :w :d)
           compound-duration (if (get-in @state [:start?]) compound-duration-filtered {:h 0 :m 0 :s 0})
-          ms (mod (date-fns/differenceInMilliseconds (get-in @state [:now]) (get-in @state [:start])) 1000)]
+          ms (when (get-in @state [:start?]) (mod (date-fns/differenceInMilliseconds (get-in @state [:now]) (get-in @state [:start])) 1000))]
       [:div.flex.flex-col.items-center.justify-center.content-center.self-center
        [:div.flex.flex-row.text-6xl.tracking-wide.leading-none.text-teal-500.text-opacity-100.cursor-pointer
         {:on-click #(swap! state update-in [:ms?] not)}
@@ -57,9 +58,14 @@
        (when (get-in @state [:ms?]) [:div.text-base.tracking-wide.leading-none.text-teal-500.text-opacity-100.mt-2 ms])
        [:div.flex.flex-row.mt-5.text-xl
         [:button.btn.btn-nav.mr-2 {:on-click #(swap! state assoc-in [:start] (.now js/Date))} "Reset"]
-        [:button.btn.btn-nav {:on-click #(swap! state update-in [:start?] not)} 
+        [:button.btn.btn-nav {:on-click (fn [e]
+                                          #_(swap! state (fn [a] (+ a 2)))
+                                          (swap! state update-in [:start?] not)
+                                          (swap! state assoc-in [:start] (.now js/Date))
+                                          )
+                              } 
          (if (get-in @state [:start?]) "Stop" "Start")]]
-       [dev-panel [state]]])
+       (when (get-in @state [:dev?]) [dev-panel [state]])])
     (finally (js/clearInterval timer-fn))))
 
 (defn timer-panel-nav []
