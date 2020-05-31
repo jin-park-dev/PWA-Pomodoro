@@ -2,11 +2,31 @@
 
 One Paragraph of project description goes here
 
+# DEV Info
+
+## Requirement
+
+Should be simple UI like google.
+And have More styled version
+Should be APP like, to PWA on phone.
+
 ## Useful
+
+### Tech docs
+
+stylefy - https://github.com/Jarzka/stylefy
+(Alternative - https://github.com/dvingo/cljs-styled-components)
+
+### ES6 Import => CLJS Require
+
+See https://shadow-cljs.github.io/docs/UsersGuide.html#_using_npm_packages
+For full table of examples.
+
 
 ### Useful commands
 
 `shadow-cljs watch app`
+
 
 ### Links
 

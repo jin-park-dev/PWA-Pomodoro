@@ -58,7 +58,7 @@
 
     (finally (js/clearInterval timer-fn))))
 
-(def clock-styled-vue {;  font-family: 'Share Tech Mono', monospace;
+(def clock-styled-vue {:font-family "'Share Tech Mono', monospace"
                        :color "#daf6ff"
                        :text-shadow "0 0 20px rgba(10, 175, 230, 1),  0 0 20px rgba(10, 175, 230, 0)"})
 
@@ -73,10 +73,10 @@
                      state (reagent/atom {:currently-unused ""})]
 
     [:div#clock-styled-vue.flex.flex-row.items-center.justify-center.h-full.tracking-widest.leading-tight.text-2xl (use-style clock-styled-vue)
-     [:div#clock-styled-vue-item.flex.flex-col.items-center.justify-center (use-style clock-styled-vue-item)
+     [:div.flex.flex-col.items-center.justify-center (use-style clock-styled-vue-item)
       [:div.lock-styled-vue--date.text-3xl (date-fns/format @time-now "y-MM-dd iii")]
-      [:div.flex.flex-row.lock-styled-vue--time.text-6xl
-       [:div.lock-styled-vue--time--hour (date-fns/format @time-now "h")]
+      [:div.flex.flex-row.text-6xl
+       [:div (date-fns/format @time-now "h")]
        [:div ":"]
        [:div.lock-styled-vue--time--min (date-fns/format @time-now "mm")]
        [:div ":"]
@@ -87,7 +87,7 @@
 
 ; Based on https://codepen.io/gau/pen/LjQwGp
 (def clock-digital-styled-vue--container-style {:height "400px"
-                                                :background "#0f3854 radial-gradient(ellipse at center,  #0a2e38  0%, #000000 70%)"
+                                                :background "radial-gradient(ellipse at center,  #0a2e38  0%, #000000 100%)"
                                                 :background-size "100%"
                                                 :border "solid"})
 
