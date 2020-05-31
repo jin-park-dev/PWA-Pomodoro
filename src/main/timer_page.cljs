@@ -25,18 +25,6 @@
         (pr-str @state)]]))
    ])
 
-; date-fns doesn't have way to convert duration to hour:min:second  !!! (Moment does)
-; I'll have to do calcuation by hand. It will show difference in hour, second or millisecond etc
-(defn seconds-to-hoursMinutesSeconds [seconds]
-  (println "sec: " (mod seconds 60))
-  (println "min: " (if (< second 3600) (quot seconds 60) (mod seconds 3600)))
-  (println "hour: " (quot seconds 60))
-  (println "day: " (quot seconds 60))
-  )
-
-; I need start time
-; Time now
-; do Diff to correct/use to show time diff every... x second (500ms?)
 (defn countup-component []
   (reagent/with-let [seconds-left (reagent/atom 60)
                      timer-fn     (js/setInterval #(swap! seconds-left inc) 1000)
@@ -49,24 +37,29 @@
 ; TODO: More control on which unit time when shown
 (defn timer-simple []
   (reagent/with-let [state (reagent/atom {:start (.now js/Date)
-                                          :now (.now js/Date)})
+                                          :now (.now js/Date)
+                                          :start? true
+                                          :ms? false})
                      timer-fn     (js/setInterval
                                    #(swap! state assoc-in [:now] (.now js/Date)) 70)]  ;refreshed every 70ms. 1000ms = 1sec
     (let [compound-duration-all (seconds->duration (date-fns/differenceInSeconds (get-in @state [:now]) (get-in @state [:start])))
-          compound-duration (dissoc compound-duration-all :w :d)
+          compound-duration-filtered (dissoc compound-duration-all :w :d)
+          compound-duration (if (get-in @state [:start?]) compound-duration-filtered {:h 0 :m 0 :s 0})
           ms (mod (date-fns/differenceInMilliseconds (get-in @state [:now]) (get-in @state [:start])) 1000)]
-      [:div.flex.flex-col.items-center ;.justify-center.content-center.self-center
-       [:div.flex.flex-row.text-6xl.tracking-wide.leading-none.text-teal-500.text-opacity-100
+      [:div.flex.flex-col.items-center.justify-center.content-center.self-center
+       [:div.flex.flex-row.text-6xl.tracking-wide.leading-none.text-teal-500.text-opacity-100.cursor-pointer
+        {:on-click #(swap! state update-in [:ms?] not)}
         (doall
          (for [[k v] compound-duration]
            ; Change original datastructure to nil to choose when to have number or now ?
            [:div.flex.flex-row.mr-2 {:key k} [:div v] [:div.text-base.self-end k]]))
-        ; [:div ms]
-        ]
-       [:div.flex.flex-row.mt-2
+        #_[:div.text-base.tracking-wide.leading-none.text-teal-500.text-opacity-100.mt-2 ms]] ; I like side but it keeps changing, due to flex being responsive and fontsize being different. Maybe float or span?
+       (when (get-in @state [:ms?]) [:div.text-base.tracking-wide.leading-none.text-teal-500.text-opacity-100.mt-2 ms])
+       [:div.flex.flex-row.mt-5.text-xl
         [:button.btn.btn-nav.mr-2 {:on-click #(swap! state assoc-in [:start] (.now js/Date))} "Reset"]
-        [:button.btn.btn-nav {:on-click #(reset! state not)} "Start"]]
-       #_[dev-panel [state]]])
+        [:button.btn.btn-nav {:on-click #(swap! state update-in [:start?] not)} 
+         (if (get-in @state [:start?]) "Stop" "Start")]]
+       [dev-panel [state]]])
     (finally (js/clearInterval timer-fn))))
 
 (defn timer-panel-nav []

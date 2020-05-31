@@ -47,7 +47,7 @@
   (reagent/with-let [time-now (reagent/atom (.now js/Date))
                      timer-fn (js/setInterval #(reset! time-now (.now js/Date)) 500)
                      state (reagent/atom {:currently-unused ""})]
-    [:div#clock-styled.flex.flex-row.text-3xl
+    [:div#clock-styled.flex.flex-row.text-6xl.tracking-wide.leading-none.text-teal-500.text-opacity-100
      [:div (date-fns/format @time-now "h")]
      [:div ":"]
      [:div (date-fns/format @time-now "mm")]
@@ -92,15 +92,15 @@
 
 ; Might not need this layer
 (defn clock-digital-styled-vue--container []
-  [:div  (use-style clock-digital-styled-vue--container-style)
+  [:div.w-full (use-style clock-digital-styled-vue--container-style)
    [clock-digital-styled-vue]])
 
 (defn clock-panel-nav []
   (let [nav-styled? (reagent/atom true)]
     (fn []
-      [:div
+      [:div.flex.flex-col.items-center
        [:div.mb-5 (if @nav-styled? [:button.btn.btn-nav {:on-click #(swap! nav-styled? not)} "Styled"] [:button.btn.btn-nav {:on-click #(swap! nav-styled? not)} "Clean"])]
-       (if @nav-styled? [clock-digital-styled-vue--container] [clock-digital-styled-basic])])))
+       (if @nav-styled? [clock-digital-styled-vue--container] [:div.mt-56 [clock-digital-styled-basic]])])))
 
 (defn clock-page-container []
   [:div [clock-panel-nav]])
