@@ -45,36 +45,36 @@
     [:div.timer [:div "Time Remaining: " (str @seconds-left)]]
     (finally (js/clearInterval timer-fn))))
 
+; TODO: can't put "compound-duration" above in with-let. Atom seems to not get evalutated so need second let? Or anther way?
+; TODO: More control on which unit time when shown
 (defn timer-simple []
   (reagent/with-let [state (reagent/atom {:start (.now js/Date)
                                           :now (.now js/Date)})
                      timer-fn     (js/setInterval
-                                   #(swap! state assoc-in [:now] (.now js/Date))
-                                   1)]
-    [:div
-     [:div "state start: " (str (get-in @state [:start]))]
-     [:div "state now: " (str (get-in @state [:now]))]
-     [:div "diff ms: " (mod (date-fns/differenceInMilliseconds (get-in @state [:now]) (get-in @state [:start])) 1000)]
-     [:div "diff sec: " (:sec (seconds->duration (date-fns/differenceInSeconds (get-in @state [:now]) (get-in @state [:start]))))]
-     [:div "diff min: " (:min (seconds->duration (date-fns/differenceInSeconds (get-in @state [:now]) (get-in @state [:start]))))]
-     [:div "diff hour: " (:hr (seconds->duration (date-fns/differenceInSeconds (get-in @state [:now]) (get-in @state [:start]))))]
-     [:div "diff day: " (:d (seconds->duration (date-fns/differenceInSeconds (get-in @state [:now]) (get-in @state [:start]))))]
-     [:div "diff week: " (:wk (seconds->duration (date-fns/differenceInSeconds (get-in @state [:now]) (get-in @state [:start]))))]
-     #_[:div "diff intervalToDuration: " (date-fns/intervalToDuration {"start:" (get-in @state [:now]) "end:" (get-in @state [:start])})]
-     [:div.flex.flex-row
-      [:button.btn.btn-nav.mr-2 {:on-click #(swap! state assoc-in [:start] (.now js/Date))} "Reset"]
-      [:button.btn.btn-nav {:on-click #(reset! state not)} "Start"]]
-     [dev-panel [state]]
-     ]
-    (finally (js/clearInterval timer-fn)))
-  )
+                                   #(swap! state assoc-in [:now] (.now js/Date)) 70)]  ;refreshed every 70ms. 1000ms = 1sec
+    (let [compound-duration-all (seconds->duration (date-fns/differenceInSeconds (get-in @state [:now]) (get-in @state [:start])))
+          compound-duration (dissoc compound-duration-all :w :d)
+          ms (mod (date-fns/differenceInMilliseconds (get-in @state [:now]) (get-in @state [:start])) 1000)]
+      [:div.flex.flex-col.items-center ;.justify-center.content-center.self-center
+       [:div.flex.flex-row.text-6xl.tracking-wide.leading-none.text-teal-500.text-opacity-100
+        (doall
+         (for [[k v] compound-duration]
+           ; Change original datastructure to nil to choose when to have number or now ?
+           [:div.flex.flex-row.mr-2 {:key k} [:div v] [:div.text-base.self-end k]]))
+        ; [:div ms]
+        ]
+       [:div.flex.flex-row.mt-2
+        [:button.btn.btn-nav.mr-2 {:on-click #(swap! state assoc-in [:start] (.now js/Date))} "Reset"]
+        [:button.btn.btn-nav {:on-click #(reset! state not)} "Start"]]
+       #_[dev-panel [state]]])
+    (finally (js/clearInterval timer-fn))))
 
-(defn timer-panel []
-  [:div 
+(defn timer-panel-nav []
+  [:div.mt-56
    [timer-simple]])
 
 (defn timer-page-container []
-  [:div [timer-panel]])
+  [:div [timer-panel-nav]])
 
 
 (comment

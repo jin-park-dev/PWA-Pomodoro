@@ -19,7 +19,7 @@
         hr      (first hours)
         min     (quot (last hours) seconds-in-minute)
         sec     (rem (last hours) seconds-in-minute)]
-    {:wk wk :d d :hr hr :min min :sec sec}))
+    {:w wk :d d :h hr :m min :s sec}))
 
 (comment
   (seconds->duration 66)
