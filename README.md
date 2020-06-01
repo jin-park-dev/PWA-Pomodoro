@@ -35,8 +35,6 @@ Possible to refactor
 Inital Entering Hi Nice page with item in center only?
 Navbar hide with ----\/----- for full app-like ui?
 
-Post-CSS CLI can't see output. Use concurrently(?) oro ther helper
-
 Reframe to keep theme, or some other info to be shared between switching of pages?
 
 
@@ -58,7 +56,10 @@ stylefy - https://github.com/Jarzka/stylefy
 
 Shadow CLJS - https://shadow-cljs.github.io/docs/UsersGuide.html
 Reagent - https://cljdoc.org/d/reagent/reagent/1.0.0-alpha2/doc/tutorials/react-features
+concurrently - https://www.npmjs.com/package/concurrently
 
+
+concurrently npm:watch-js = npm run watch-js
 
 ### ES6 Import => CLJS Require
 

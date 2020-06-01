@@ -4,25 +4,26 @@
   "private": true,
   "devDependencies": {
     "autoprefixer": "^9.8.0",
+    "concurrently": "^5.2.0",
     "postcss-cli": "^7.1.1",
     "shadow-cljs": "2.9.10",
     "tailwindcss": "^1.4.6"
   },
   "dependencies": {
-    "concurrently": "^5.2.0",
     "date-fns": "^2.14.0",
     "react": "^16.13.0",
     "react-dom": "16.13.0",
     "react-router-dom": "^5.2.0"
   },
   "scripts": {
-    "start": "npm run watch:css & npm run start:shadow",
+    "start": "concurrently \"npm:watch*\" ",
     "build": "npm run build:css && npm run build:shadow",
     "report": "npm run report:shadow",
     "report:shadow": "shadow-cljs run shadow.cljs.build-report app report.html",
-    "start:shadow": "shadow-cljs -d cider/piggieback:0.4.2 -d cider/cider-nrepl:0.24.0 watch app",
+    "watch:shadow": "shadow-cljs -d cider/piggieback:0.4.2 -d cider/cider-nrepl:0.24.0 watch app",
     "build:shadow": "shadow-cljs release app",
     "build:css": "postcss src/assets/tailwind_config.css --output public/css/tailwind.css",
-    "watch:css": "postcss src/assets/tailwind_config.css --output public/css/tailwind.css --watch"
+    "watch:css": "postcss src/assets/tailwind_config.css --output public/css/tailwind.css --watch",
+    "legacy:start": "npm run watch:css & npm run watch:shadow"
   }
 }
