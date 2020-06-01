@@ -22,7 +22,7 @@
 (defn root []
   [:> BrowserRouter
    [:div.grid-style
-    [:nav.border-b-2.border-solid.border-gray-500
+    [:nav
      [:ul.flex.flex-row
       [:li.mr-6
        [:> NavLink {:to "/"

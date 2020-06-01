@@ -29,6 +29,10 @@
     @apply bg-gray-100;
 }
 
+nav {
+    @apply border-b-2 border-solid border-gray-500 p-2
+}
+
 .nav {
     @apply inline-block border rounded no-underline py-1 px-3;
 }

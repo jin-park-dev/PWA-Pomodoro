@@ -673,6 +673,15 @@ a {
   background-color: rgba(247, 250, 252, var(--bg-opacity));
 }
 
+nav {
+  border-bottom-width: 2px;
+  border-style: solid;
+  --border-opacity: 1;
+  border-color: #a0aec0;
+  border-color: rgba(160, 174, 192, var(--border-opacity));
+  padding: 0.5rem
+}
+
 .nav {
   display: inline-block;
   border-width: 1px;
