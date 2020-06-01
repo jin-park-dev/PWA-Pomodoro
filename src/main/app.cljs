@@ -21,9 +21,9 @@
 
 (defn root []
   [:> BrowserRouter
-   [:div.p-10
-    [:nav.mb-6.border-b-2.border-solid.border-gray-500
-     [:ul.flex.mb-2
+   [:div.grid-style
+    [:nav.border-b-2.border-solid.border-gray-500
+     [:ul.flex.flex-row
       [:li.mr-6
        [:> NavLink {:to "/"
                     :active-class-name "nav-link--active"
@@ -57,5 +57,5 @@
 (defn init []
   ; Add other initalization here if needed such as ajax call for inital data
   (start) ; Reagent (react)
-  (stylefy/init)  ; 
+  (stylefy/init)
   )

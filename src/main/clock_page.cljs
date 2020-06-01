@@ -103,7 +103,7 @@
        (if @nav-styled? [clock-digital-styled-vue--container] [:div.mt-56 [clock-digital-styled-basic]])])))
 
 (defn clock-page-container []
-  [:div [clock-panel-nav]])
+  [:main [clock-panel-nav]])
 
 (comment
   ; usage of js date-fns package

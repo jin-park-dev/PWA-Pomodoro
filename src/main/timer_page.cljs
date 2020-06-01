@@ -53,7 +53,7 @@
    [timer-simple]])
 
 (defn timer-page-container []
-  [:div [timer-panel-nav]])
+  [:main [timer-panel-nav]])
 
 
 (comment

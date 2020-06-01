@@ -31,5 +31,7 @@
    [:p "Pomodoro Timer"]])
 
 (defn index-page-container []
-  [:div.flex.flex-row.justify-center.h-full
-   [index-panel]])
+  [:main [index-panel]])
+
+
+;; [:footer "The footer"]

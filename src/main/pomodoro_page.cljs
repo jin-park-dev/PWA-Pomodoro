@@ -48,4 +48,4 @@
    ])
 
 (defn pomodoro-page-container []
-  [:div [pomodoro-panel-nav]])
+  [:main [pomodoro-panel-nav]])
