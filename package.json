@@ -9,15 +9,20 @@
     "tailwindcss": "^1.4.6"
   },
   "dependencies": {
+    "concurrently": "^5.2.0",
     "date-fns": "^2.14.0",
     "react": "^16.13.0",
     "react-dom": "16.13.0",
     "react-router-dom": "^5.2.0"
   },
   "scripts": {
-    "start": "npm run watch:css && npm run start:shadow",
-    "start:shadow": "shadow-cljs -d cider/piggieback:0.4.2 -d cider/cider-nrepl:0.24.0 watch :app",
-    "build:css": "postcss src/assets/tailwind_config.css -o public/css/tailwind.css",
-    "watch:css": "postcss src/assets/tailwind_config.css -o public/css/tailwind.css"
+    "start": "npm run watch:css & npm run start:shadow",
+    "build": "npm run build:css && npm run build:shadow",
+    "report": "npm run report:shadow",
+    "report:shadow": "shadow-cljs run shadow.cljs.build-report app report.html",
+    "start:shadow": "shadow-cljs -d cider/piggieback:0.4.2 -d cider/cider-nrepl:0.24.0 watch app",
+    "build:shadow": "shadow-cljs release app",
+    "build:css": "postcss src/assets/tailwind_config.css --output public/css/tailwind.css",
+    "watch:css": "postcss src/assets/tailwind_config.css --output public/css/tailwind.css --watch"
   }
 }

@@ -25,3 +25,5 @@ snap.*.trc
 javacore.*.txt
 javacore.*.dmp
 jitdump.*.dmp
+
+report.html

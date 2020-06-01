@@ -2,7 +2,43 @@
 
 One Paragraph of project description goes here
 
-# DEV Info
+## DEV Info
+TEMP
+
+
+Output location - $ shadow-cljs release app --config-merge '{:output-dir "somewhere/else"}'
+
+7.6.1. Release Versions
+shadow-cljs release app --config-merge '{:release-version "v1"}'
+
+Service worker?
+worker.js
+
+Pushing out old cache javascript issue
+7.6.2. Filenames with Fingerprint-Hash
+
+Output Manifest? Can it be useful?
+
+Calva cider-nrepl setup?
+https://shadow-cljs.github.io/docs/UsersGuide.html#_dependencies_2
+
+## ToDO More
+
+Theme? (Clean / Neon)
+Pulling out Main body container?
+full screen timer?
+
+Possible to refactor
+    Timer output part only? (UI part only)
+    Function shared between timer
+
+Inital Entering Hi Nice page with item in center only?
+Navbar hide with ----\/----- for full app-like ui?
+
+Post-CSS CLI can't see output. Use concurrently(?) oro ther helper
+
+Reframe to keep theme, or some other info to be shared between switching of pages?
+
 
 ## Requirement
 
