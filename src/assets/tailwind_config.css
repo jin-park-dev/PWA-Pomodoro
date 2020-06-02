@@ -18,17 +18,6 @@
 
 @tailwind components;
 
-.btn {
-    @apply font-bold py-2 px-4 rounded;
-  }
-
-.btn-nav {
-    @apply bg-white text-gray-800 font-semibold border border-gray-400 rounded shadow;
-}
-.btn-nav:hover {
-    @apply bg-gray-100;
-}
-
 nav {
     @apply border-b-2 border-solid border-gray-500 p-2
 }
@@ -49,5 +38,16 @@ nav {
     @apply text-black;
 }
 
+
+.btn {
+    @apply font-bold py-2 px-4 rounded;
+  }
+
+.btn-nav {
+    @apply bg-white text-gray-800 font-semibold border border-gray-400 rounded shadow;
+}
+.btn-nav:hover {
+    @apply bg-gray-100;
+}
 
 @tailwind utilities;

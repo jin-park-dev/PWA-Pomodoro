@@ -49,7 +49,7 @@
     (finally (js/clearInterval timer-fn))))
 
 (defn timer-panel-nav []
-  [:div.mt-56
+  [:div.flex-center.h-full
    [timer-simple]])
 
 (defn timer-page-container []

@@ -61,6 +61,20 @@ concurrently - https://www.npmjs.com/package/concurrently
 
 concurrently npm:watch-js = npm run watch-js
 
+
+### Decision
+
+CSS Grid layout, html etc info
+#### HTML5 semantic elements
+https://developer.mozilla.org/en-US/docs/Learn/HTML/Introduction_to_HTML/Document_and_website_structure#Enter_HTML5_structural_elements
+
+https://clzd.me/html5-section-aside-header-nav-footer-elements-not-as-obvious-as-they-sound/
+
+https://www.w3schools.com/html/html5_semantic_elements.asp
+
+https://stackoverflow.com/questions/4781077/html5-best-practices-section-header-aside-article-elements
+
+
 ### ES6 Import => CLJS Require
 
 See https://shadow-cljs.github.io/docs/UsersGuide.html#_using_npm_packages

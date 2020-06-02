@@ -9,16 +9,24 @@
 
 (defn pomodoro-simple []
   (reagent/with-let [state (reagent/atom {:start (.now js/Date)
-                                          :now (date-fns/addMinutes (.now js/Date) 25)
-                                          :start? true
+                                          ;; :now (date-fns/addMinutes (.now js/Date) 25)
+                                          :now (date-fns/addSeconds (.now js/Date) 5)
                                           :ms? false
-                                          :dev? false}) ; No button currently for dev?
+                                          :start? true
+                                          :finished? false
+                                          :dev? true}) ; No button currently for dev?
                      timer-fn     (js/setInterval
-                                   #(swap! state assoc-in [:start] (.now js/Date)) 70)
-                          ]
+                                   (fn []
+                                     (swap! state assoc-in [:start] (.now js/Date))
+                                     (when (= 0 (date-fns/differenceInSeconds (get-in @state [:now]) (get-in @state [:start])))
+                                       (swap! state assoc-in [:finished?] true)))
+                                   70)]
     (let [compound-duration-all (seconds->duration (date-fns/differenceInSeconds (get-in @state [:now]) (get-in @state [:start])))
           compound-duration-filtered (dissoc compound-duration-all :w :d)
-          compound-duration (if (get-in @state [:start?]) compound-duration-filtered {:h 0 :m 25 :s 0})
+          compound-duration (cond
+                              (get-in @state [:finished?]) {:h 0 :m 0 :s 0}
+                              (get-in @state [:start?]) compound-duration-filtered
+                              :else {:h 0 :m 25 :s 0})
           ms (when (get-in @state [:start?]) (mod (date-fns/differenceInMilliseconds (get-in @state [:now]) (get-in @state [:start])) 1000))]
       [:div.flex.flex-col.items-center.justify-center.content-center.self-center
        [:div.flex.flex-row.text-6xl.tracking-wide.leading-none.text-teal-500.text-opacity-100.cursor-pointer.select-none
@@ -36,6 +44,7 @@
          "Reset"]
         [:button.btn.btn-nav {:on-click (fn [e]
                                           (swap! state update-in [:start?] not)
+                                          (swap! state assoc-in [:finished?] false)
                                           (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 25))
                                           (swap! state assoc-in [:now] (date-fns/addMinutes (.now js/Date) 25)))}
          (if (get-in @state [:start?]) "Stop" "Start")]]
@@ -43,7 +52,7 @@
     (finally (js/clearInterval timer-fn))))
 
 (defn pomodoro-panel-nav []
-  [:div.mt-56
+  [:div.flex-center.h-full
    [pomodoro-simple]
    ])
 

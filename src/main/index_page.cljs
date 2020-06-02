@@ -25,7 +25,7 @@
    text])
 
 (defn index-panel []
-  [:div.flex.flex-col.items-center.justify-center
+  [:div.flex-center.h-full
    [:h1 "Welcome to PWAdoro"]
    [:p "Simple no nonsense Pomodoro Timer"]
    [:p "Pomodoro Timer"]])
