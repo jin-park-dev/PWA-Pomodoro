@@ -25,7 +25,7 @@
                                           :start? true
                                           :ms-visible? false
                                           :ms-placement "bottom"
-                                          :dev? true}) ; No button currently for dev?
+                                          :dev? false}) ; No button currently for dev?
                      timer-fn     (js/setInterval
                                    #(swap! state assoc-in [:now] (.now js/Date)) 70)]  ;refreshed every 70ms. 1000ms = 1sec
     (let [compound-duration-all (seconds->duration (date-fns/differenceInSeconds (get-in @state [:now]) (get-in @state [:start])))
@@ -33,17 +33,13 @@
           ms (when (get-in @state [:start?]) (mod (date-fns/differenceInMilliseconds (get-in @state [:now]) (get-in @state [:start])) 1000))
           compound-duration-plus-ms (assoc compound-duration-filtered :ms ms)
           compound-duration (if (get-in @state [:start?]) compound-duration-plus-ms {:h 0 :m 0 :s 0 :ms 0})  ; Although component has default explictly choosing when on/off this way.
-          
           ]
       [:div.flex.flex-col.items-center.justify-center.content-center.self-center
        [:div.flex.flex-row.text-6xl.tracking-wide.leading-none.text-teal-500.text-opacity-100.cursor-pointer.select-none
         {:on-click #(swap! state update-in [:ms-visible?] not)}
         [clock/digital-clean {:compound-duration compound-duration
                               :ms-placement (get-in @state [:ms-placement])
-                              :ms-visible? (get-in @state [:ms-visible?])
-                              }]
-        #_[:div.text-base.tracking-wide.leading-none.text-teal-500.text-opacity-100.mt-2 ms]] ; I like side but it keeps changing, due to flex being responsive and fontsize being different. Maybe float or span?
-       #_(when (get-in @state [:ms?]) [:div.text-base.tracking-wide.leading-none.text-teal-500.text-opacity-100.mt-2 ms])
+                              :ms-visible? (get-in @state [:ms-visible?])}]]
        [:div.flex.flex-row.mt-5.text-xl
         [:button.btn.btn-nav.mr-2 {:on-click #(swap! state assoc-in [:start] (.now js/Date))} "Reset"]
         [:button.btn.btn-nav {:on-click (fn [e]
