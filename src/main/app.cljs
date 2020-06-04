@@ -25,7 +25,7 @@
   [:> BrowserRouter
    [:div.grid-style
     [:nav
-     [:ul.flex.flex-row
+     [:ul.flex.flex-row.justify-center
       [:li.mr-6
        [:> NavLink {:to "/"
                     :active-class-name "nav-link--active"

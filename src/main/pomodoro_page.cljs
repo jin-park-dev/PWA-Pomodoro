@@ -17,7 +17,7 @@
                                           
                                           :start? true
                                           :finished? false
-                                          :dev? true}) ; No button currently for dev?
+                                          :dev? false}) ; No button currently for dev?
                      timer-fn     (js/setInterval
                                    (fn []
                                      (swap! state assoc-in [:start] (.now js/Date))

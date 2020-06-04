@@ -22,7 +22,7 @@
 (defn timer-simple []
   (reagent/with-let [state (reagent/atom {:start (.now js/Date)
                                           :now (.now js/Date)
-                                          :start? true
+                                          :start? false
                                           :ms-visible? false
                                           :ms-placement "bottom"
                                           :dev? false}) ; No button currently for dev?
@@ -41,11 +41,11 @@
                               :ms-placement (get-in @state [:ms-placement])
                               :ms-visible? (get-in @state [:ms-visible?])}]]
        [:div.flex.flex-row.mt-5.text-xl
-        [:button.btn.btn-nav.mr-2 {:on-click #(swap! state assoc-in [:start] (.now js/Date))} "Reset"]
+        #_[:button.btn.btn-nav.mr-2 {:on-click #(swap! state assoc-in [:start] (.now js/Date))} "Reset"] ;; Pause requires time adding/removing everytime pause is pressed. Lets keep simple for now. so 1 button
         [:button.btn.btn-nav {:on-click (fn [e]
                                           (swap! state update-in [:start?] not)
                                           (swap! state assoc-in [:start] (.now js/Date)))}
-         (if (get-in @state [:start?]) "Stop" "Start")]]
+         (if (get-in @state [:start?]) "Restart" "Start")]]
        (when (get-in @state [:dev?]) [dev-panel [state]])])
     (finally (js/clearInterval timer-fn))))
 
