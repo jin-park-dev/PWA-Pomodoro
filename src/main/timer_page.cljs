@@ -24,7 +24,7 @@
                                           :now (.now js/Date)
                                           :start? true
                                           :ms? false
-                                          :dev? false}) ; No button currently for dev?
+                                          :dev? true}) ; No button currently for dev?
                      timer-fn     (js/setInterval
                                    #(swap! state assoc-in [:now] (.now js/Date)) 70)]  ;refreshed every 70ms. 1000ms = 1sec
     (let [compound-duration-all (seconds->duration (date-fns/differenceInSeconds (get-in @state [:now]) (get-in @state [:start])))
@@ -34,12 +34,10 @@
       [:div.flex.flex-col.items-center.justify-center.content-center.self-center
        [:div.flex.flex-row.text-6xl.tracking-wide.leading-none.text-teal-500.text-opacity-100.cursor-pointer.select-none
         {:on-click #(swap! state update-in [:ms?] not)}
-        (doall
-         (for [[k v] compound-duration]
-           ; Change original datastructure to nil to choose when to have number or now ?
-           [:div.flex.flex-row.mr-2 {:key k} [:div v] [:div.text-base.self-end k]]))
+        [clock/digital-clean {:compound-duration compound-duration
+                              :ms ms}]
         #_[:div.text-base.tracking-wide.leading-none.text-teal-500.text-opacity-100.mt-2 ms]] ; I like side but it keeps changing, due to flex being responsive and fontsize being different. Maybe float or span?
-       (when (get-in @state [:ms?]) [:div.text-base.tracking-wide.leading-none.text-teal-500.text-opacity-100.mt-2 ms])
+       #_(when (get-in @state [:ms?]) [:div.text-base.tracking-wide.leading-none.text-teal-500.text-opacity-100.mt-2 ms])
        [:div.flex.flex-row.mt-5.text-xl
         [:button.btn.btn-nav.mr-2 {:on-click #(swap! state assoc-in [:start] (.now js/Date))} "Reset"]
         [:button.btn.btn-nav {:on-click (fn [e]
