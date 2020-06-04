@@ -23,19 +23,25 @@
   (reagent/with-let [state (reagent/atom {:start (.now js/Date)
                                           :now (.now js/Date)
                                           :start? true
-                                          :ms? false
+                                          :ms-visible? false
+                                          :ms-placement "bottom"
                                           :dev? true}) ; No button currently for dev?
                      timer-fn     (js/setInterval
                                    #(swap! state assoc-in [:now] (.now js/Date)) 70)]  ;refreshed every 70ms. 1000ms = 1sec
     (let [compound-duration-all (seconds->duration (date-fns/differenceInSeconds (get-in @state [:now]) (get-in @state [:start])))
-          compound-duration-filtered (dissoc compound-duration-all :w :d)
-          compound-duration (if (get-in @state [:start?]) compound-duration-filtered {:h 0 :m 0 :s 0})
-          ms (when (get-in @state [:start?]) (mod (date-fns/differenceInMilliseconds (get-in @state [:now]) (get-in @state [:start])) 1000))]
+          compound-duration-filtered (dissoc compound-duration-all :w :d)  ; Remove week, days. (Maybe add back if needed one day but it disables showing those two then.)
+          ms (when (get-in @state [:start?]) (mod (date-fns/differenceInMilliseconds (get-in @state [:now]) (get-in @state [:start])) 1000))
+          compound-duration-plus-ms (assoc compound-duration-filtered :ms ms)
+          compound-duration (if (get-in @state [:start?]) compound-duration-plus-ms {:h 0 :m 0 :s 0 :ms 0})  ; Although component has default explictly choosing when on/off this way.
+          
+          ]
       [:div.flex.flex-col.items-center.justify-center.content-center.self-center
        [:div.flex.flex-row.text-6xl.tracking-wide.leading-none.text-teal-500.text-opacity-100.cursor-pointer.select-none
-        {:on-click #(swap! state update-in [:ms?] not)}
+        {:on-click #(swap! state update-in [:ms-visible?] not)}
         [clock/digital-clean {:compound-duration compound-duration
-                              :ms ms}]
+                              :ms-placement (get-in @state [:ms-placement])
+                              :ms-visible? (get-in @state [:ms-visible?])
+                              }]
         #_[:div.text-base.tracking-wide.leading-none.text-teal-500.text-opacity-100.mt-2 ms]] ; I like side but it keeps changing, due to flex being responsive and fontsize being different. Maybe float or span?
        #_(when (get-in @state [:ms?]) [:div.text-base.tracking-wide.leading-none.text-teal-500.text-opacity-100.mt-2 ms])
        [:div.flex.flex-row.mt-5.text-xl
