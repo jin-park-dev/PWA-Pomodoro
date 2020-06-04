@@ -7,6 +7,8 @@
  :dependencies
  [[reagent "1.0.0-alpha2"] ; Check latest here - https://clojars.org/reagent
   [stylefy "2.0.0-rc.1"]
+  [re-frame "1.0.0-rc2"]
+  
   ; [re-frame "RELEASE"] ; Check latest here - https://clojars.org/re-frame
   ;  [cljs-ajax "0.8.0"] ; Check latest here - https://github.com/JulianBirch/cljs-ajax
   ;  [day8.re-frame/http-fx "v0.2.0"] ; Check latest here - https://clojars.org/day8.re-frame/http-fx
@@ -15,13 +17,15 @@
  :dev-http
  {8105 "public"}
 
+;;  See feature/re-frame-10x for to customize for release/dev
  :builds
  {:app  ; Can be any name I choose
   {:target :browser
-   :modules {:main {:init-fn app/init}}}  ; Main function to run, entry point to app.
+   :modules  {:main  ; <- becomes public/js/main.js 
+              {:init-fn app/init}}  ; Main function to run, entry point to app.
   }}
+ }
 
 
 ;; for package.json
-;; Latest nrepl https://github.com/clojure-emacs/cider-nrepl/blob/master/CHANGELOG.md
 ;; Latest nrepl https://github.com/clojure-emacs/cider-nrepl/blob/master/CHANGELOG.md

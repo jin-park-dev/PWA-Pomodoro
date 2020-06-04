@@ -30,18 +30,6 @@
 
 
 ; with-let seems only need form-1 or is it form-2 ??? - https://github.com/reagent-project/reagent/issues/378
-(defn clock-simple []
-  (reagent/with-let [time-now (reagent/atom (.now js/Date))
-                     timer-fn (js/setInterval #(reset! time-now (.now js/Date)) 500)
-                     state (reagent/atom {:currently-unused ""})]
-
-    [:div#clock-simple
-     {:on-click (fn [] (println "clicked clock-simple"))}
-     [:div "Date: " (date-fns/format @time-now "MM/dd/yyyy")]
-     [:div "Time: " (date-fns/format @time-now "h:mm:ss aaa")]]
-
-    (finally (js/clearInterval timer-fn))))
-
 ; With each hour/min/seconds time pulled out it can be more styled
 (defn clock-digital-styled-basic [style]
   (reagent/with-let [time-now (reagent/atom (.now js/Date))
@@ -52,17 +40,16 @@
      [:div ":"]
      [:div (date-fns/format @time-now "mm")]
      [:div ":"]
-     [:div.mr-1 (date-fns/format @time-now "ss")]
+     [:div.mr-5 (date-fns/format @time-now "ss")]
      [:div (date-fns/format @time-now "aaa")]]
-                    
+
     (finally (js/clearInterval timer-fn))))
 
 (def clock-styled-vue {:font-family "'Share Tech Mono', monospace"
                        :color "#daf6ff"
                        :text-shadow "0 0 20px rgba(10, 175, 230, 1),  0 0 20px rgba(10, 175, 230, 0)"})
 
-(def clock-styled-vue-item {
-                            ; :grid-area "a"
+(def clock-styled-vue-item {; :grid-area "a"
                             :align-self "center"
                             :justify-self "center"})
 
@@ -96,11 +83,11 @@
    [clock-digital-styled-vue]])
 
 (defn clock-panel-nav []
-  (let [nav-styled? (reagent/atom true)]
+  (let [nav-styled? (reagent/atom false)]
     (fn []
-      [:div.flex.flex-col.items-center
+      [:div.flex.flex-col.items-center.h-full
        [:div.mb-5 (if @nav-styled? [:button.btn.btn-nav {:on-click #(swap! nav-styled? not)} "Styled"] [:button.btn.btn-nav {:on-click #(swap! nav-styled? not)} "Clean"])]
-       (if @nav-styled? [clock-digital-styled-vue--container] [:div.mt-56 [clock-digital-styled-basic]])])))
+       [:div.flex-center.h-full.w-full (if @nav-styled? [clock-digital-styled-vue--container] [:div [clock-digital-styled-basic]])]])))
 
 (defn clock-page-container []
   [:main [clock-panel-nav]])
