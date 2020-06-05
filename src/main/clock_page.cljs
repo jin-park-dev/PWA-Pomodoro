@@ -1,6 +1,8 @@
 (ns clock-page
   (:require
    [reagent.core :as reagent]
+   [re-frame.core :as rf]
+   [state.subs :as sub]
    [stylefy.core :as stylefy :refer [use-style]]
    [date-fns :as date-fns]))
 
@@ -34,7 +36,7 @@
 (defn clock-digital-styled-basic [style]
   (reagent/with-let [time-now (reagent/atom (.now js/Date))
                      timer-fn (js/setInterval #(reset! time-now (.now js/Date)) 500)
-                     state (reagent/atom {:currently-unused ""})]
+                     state (reagent/atom {:dev? @(rf/subscribe [:dev?])})]
     [:div#clock-styled.flex.flex-row.text-6xl.tracking-wide.leading-none.text-teal-500.text-opacity-100
      [:div (date-fns/format @time-now "h")]
      [:div ":"]

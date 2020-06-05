@@ -1,6 +1,8 @@
 (ns pomodoro-page
   (:require
    [reagent.core :as reagent]
+   [re-frame.core :as rf]
+   [state.subs :as sub] ; Needed for subs
    [stylefy.core :as stylefy :refer [use-style]]
    [date-fns :as date-fns]
    [util.time :refer [seconds->duration]]
@@ -17,7 +19,7 @@
                                           
                                           :start? true
                                           :finished? false
-                                          :dev? false}) ; No button currently for dev?
+                                          :dev? (rf/subscribe [:dev?])}) ; Seems not reactive if I destructure here
                      timer-fn     (js/setInterval
                                    (fn []
                                      (swap! state assoc-in [:start] (.now js/Date))
@@ -45,13 +47,16 @@
                                                  (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 25))
                                                  (swap! state assoc-in [:now] (date-fns/addMinutes (.now js/Date) 25)))}
            "Reset"]
+        #_[:button.btn.btn-nav.mr-2 {:on-click (fn [e]
+                                               (rf/dispatch [:dev/dev-switch]))}
+         "dev: " (pr-str @(rf/subscribe [:dev?]))]
         [:button.btn.btn-nav {:on-click (fn [e]
                                           (swap! state update-in [:start?] not)
                                           (swap! state assoc-in [:finished?] false)
                                           (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 25))
                                           (swap! state assoc-in [:now] (date-fns/addMinutes (.now js/Date) 25)))}
          (if (get-in @state [:start?]) "Stop" "Start")]]
-       (when (get-in @state [:dev?]) [dev-panel [state]])])
+       (when @(get-in @state [:dev?]) [dev-panel [state]])])
     (finally (js/clearInterval timer-fn))))
 
 (defn pomodoro-panel-nav []

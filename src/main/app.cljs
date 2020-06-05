@@ -3,6 +3,7 @@
    [reagent.core :as r]
    [reagent.dom :as d]
    [re-frame.core :as rf]
+   [state.subs :as sub]
 
    [state.events :as events]
 
@@ -42,7 +43,14 @@
       [:li.mr-6
        [:> NavLink {:to "/pomodoro/"
                     :activeClassName "nav-link--active"
-                    :class "nav nav-link"} "Pomodoro"]]]]
+                    :class "nav nav-link"} "Pomodoro"]]
+      (when @(rf/subscribe [:dev-panel?])
+        [:li.mr-6.cursor-pointer.text-sm
+         [:a.nav.nav-link.text-blue-700
+          {:on-click (fn [e]
+                       (.preventDefault e)
+                       (rf/dispatch [:dev/dev-switch]))}
+          "dev:" (pr-str @(rf/subscribe [:dev?]))]])]]
 
     [:> Route {:path "/" :exact true :component IndexPageContainer}]
     [:> Route {:path "/clock/" :component ClockPageContainer}]
@@ -57,5 +65,6 @@
 (defn init []
   ; Add other initalization here if needed such as ajax call for inital data
   (rf/dispatch-sync [::events/initialize-db])  ; Difference with dispatch is this is synchronous (unlike dispatch which is asynchronous). Guarantees this line is done before next.
+  (rf/dispatch-sync [::events/initialize-db-dev]) ; Inital dev setting
   (start) ; Reagent (react)
   (stylefy/init))

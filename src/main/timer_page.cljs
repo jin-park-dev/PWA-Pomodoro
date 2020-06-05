@@ -1,12 +1,13 @@
 (ns timer-page
   (:require
    [reagent.core :as reagent]
+   [re-frame.core :as rf]
+   [state.subs :as sub]
    [stylefy.core :as stylefy :refer [use-style]]
    [date-fns :as date-fns]
    [util.time :refer [seconds->duration]]
    [util.dev :refer [dev-panel]]
-   [component.clock :as clock]
-   ))
+   [component.clock :as clock]))
 
 
 (defn countup-component []
@@ -25,7 +26,7 @@
                                           :start? false
                                           :ms-visible? false
                                           :ms-placement "bottom"
-                                          :dev? false}) ; No button currently for dev?
+                                          :dev? (rf/subscribe [:dev?])}) ; No button currently for dev?
                      timer-fn     (js/setInterval
                                    #(swap! state assoc-in [:now] (.now js/Date)) 70)]  ;refreshed every 70ms. 1000ms = 1sec
     (let [compound-duration-all (seconds->duration (date-fns/differenceInSeconds (get-in @state [:now]) (get-in @state [:start])))
@@ -46,7 +47,7 @@
                                           (swap! state update-in [:start?] not)
                                           (swap! state assoc-in [:start] (.now js/Date)))}
          (if (get-in @state [:start?]) "Restart" "Start")]]
-       (when (get-in @state [:dev?]) [dev-panel [state]])])
+       (when @(get-in @state [:dev?]) [dev-panel [state]])])
     (finally (js/clearInterval timer-fn))))
 
 (defn timer-panel-nav []
