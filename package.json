@@ -21,7 +21,7 @@
     "report": "npm run report:shadow",
     "report:shadow": "shadow-cljs run shadow.cljs.build-report app report.html",
     "watch:shadow": "shadow-cljs watch app",
-    "watch:shadow-old": "shadow-cljs -d cider/piggieback:0.4.2 -d cider/cider-nrepl:0.24.0 watch app",
+    "old-watch:shadow-old": "shadow-cljs -d cider/piggieback:0.4.2 -d cider/cider-nrepl:0.24.0 watch app",
     "build:shadow": "shadow-cljs release app",
     "build:css": "postcss src/assets/tailwind_config.css --output public/css/tailwind.css",
     "watch:css": "postcss src/assets/tailwind_config.css --output public/css/tailwind.css --watch",
