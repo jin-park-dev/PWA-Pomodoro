@@ -9,17 +9,31 @@
   [stylefy "2.0.0-rc.1"]
   [re-frame "1.0.0-rc2"]
   [binaryage/devtools "1.0.2"]  ; https://clojars.org/binaryage/devtools - CLJS Auto add this. preloads in watch and compile if they are on the classpath
+  ; [re-frame "RELEASE"] ; Check latest here - https://clojars.org/re-frame
+  ;  [cljs-ajax "0.8.0"] ; Check latest here - https://github.com/JulianBirch/cljs-ajax
+  ;  [day8.re-frame/http-fx "v0.2.0"] ; Check latest here - https://clojars.org/day8.re-frame/http-fx
   ]
 
+ :socket-repl {:port 9099}  ;; Doesn't seem to show anything in nmap standard scan
  :nrepl {:port 9100}  ; For calva
+
+;;  Possbile to add ssl (http2) for "primary" HTTP server
+;;  :ssl {:keystore "ssl/keystore.jks"
+;;        :password "shadow-cljs"}
 
 ;;  "primary" HTTP server for dashboard/websocket hotreload/repl clients
  :http {:port 9103
+        ;; :ssl-port 9104  ; if SSL is configured
         :host "localhost"}
 
 ;;  Basic HTTP servers serving - https://shadow-cljs.github.io/docs/UsersGuide.html#dev-http
- :dev-http {9105 "public"}  ; Simple. Default config will work
+;;  :dev-http {9105 "public"}  ; Simple. Default config will work
+  :dev-http {9105 {:root "public"
+                ;;    :proxy-url "https://some.host" ;; For reserver proxy if needed http://localhost:8000/api/foo = https://some.host/api/foo
+                   }}
 
+
+;;  See feature/re-frame-10x for to customize for release/dev
  :builds
  {:app  ; Can be any name I choose
   {:target :browser
