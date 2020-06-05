@@ -8,23 +8,74 @@
  [[reagent "1.0.0-alpha2"] ; Check latest here - https://clojars.org/reagent
   [stylefy "2.0.0-rc.1"]
   [re-frame "1.0.0-rc2"]
-  
+  [binaryage/devtools "1.0.2"]  ; https://clojars.org/binaryage/devtools - CLJS Auto add this. preloads in watch and compile if they are on the classpath
   ; [re-frame "RELEASE"] ; Check latest here - https://clojars.org/re-frame
   ;  [cljs-ajax "0.8.0"] ; Check latest here - https://github.com/JulianBirch/cljs-ajax
   ;  [day8.re-frame/http-fx "v0.2.0"] ; Check latest here - https://clojars.org/day8.re-frame/http-fx
   ]
 
- :dev-http
- {8105 "public"}
+ :socket-repl {:port 9099}  ;; Doesn't seem to show anything in nmap standard scan
+
+ :nrepl {:port 9100}  ; For calva
+
+;;  Possbile to add ssl (http2) for "primary" HTTP server
+;;  :ssl {:keystore "ssl/keystore.jks"
+;;        :password "shadow-cljs"}
+
+;;  "primary" HTTP server for dashboard/websocket hotreload/repl clients
+ :http {:port 9103
+        ;; :ssl-port 9104  ; if SSL is configured
+        :host "localhost"}
+
+;;  Basic HTTP servers serving - https://shadow-cljs.github.io/docs/UsersGuide.html#dev-http
+;;  :dev-http {9105 "public"}  ; Simple. Default config will work
+  :dev-http {9105 {:root "public"
+                ;;    :proxy-url "https://some.host" ;; For reserver proxy if needed http://localhost:8000/api/foo = https://some.host/api/foo
+                   }}
+
 
 ;;  See feature/re-frame-10x for to customize for release/dev
  :builds
  {:app  ; Can be any name I choose
   {:target :browser
-   :modules  {:main  ; <- becomes public/js/main.js 
-              {:init-fn app/init}}  ; Main function to run, entry point to app.
-  }}
- }
+
+   :output-dir "public/js"  ; Default location
+
+   :devtools {:repl-init-ns app  ; default is cljs.user. Seems to show after first evaulation (press enter) in calva.
+              :repl-pprint true  ; use cljs.pprint instead of pr-str
+              :autoload true  ; default for {:target :browser}
+            ;;   :before-load  mydev.dev/stop
+            ;;   :after-load  mydev.dev/start
+              :after-load  mydev.dev/ssstart
+              }
+   
+;;    :devtools {:before-load  dev/stop
+;;               :after-load   dev/start}
+
+   :modules {;
+            ;;   :shared
+            ;;   {:entries [app]}
+              
+              :main  ; <- becomes public/js/main.js 
+              {;
+            ;;    :init-fn app/init
+               :entries [app]
+            ;;    :depends-on #{:shared}
+               }
+
+            ;;      ;; Here is some dev-specific config
+            ;;   :dev {:compiler-options {:devcards true}}
+
+              ;; Default - Production config
+              :release {:compiler-options {:optimizations :simple}}
+
+            ;;   :worker
+            ;;   {:init-fn dev/init
+            ;;    :depends-on #{:shared}
+            ;;    :web-worker true}
+              }  ; Main function to run, entry point to app.
+
+   }}}
 
 
 ;; for package.json
