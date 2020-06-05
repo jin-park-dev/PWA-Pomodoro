@@ -38,6 +38,21 @@ Navbar hide with ----\/----- for full app-like ui?
 Reframe to keep theme, or some other info to be shared between switching of pages?
 
 
+### Improve build
+
+Shadow-CLJS - is new and changing quickly. low usage langauge + low new tool = low info on web.
+
+I had long hours following CLJS doc but some parts don't seem to work even following their standard info
+Searching google other people put things in different place
+
+Below seems to have pure cljs (not lein)
+Try running and seeing what's different sometime. (Check how old since Shadow-CLJS might have changed)
+https://github.com/quangv/shadow-re-frame-simple-example 
+https://github.com/loganpowell/shadow-proto-starter 
+https://github.com/iku000888/shadow-cljs-kitchen-async-puppeteer 
+https://github.com/baskeboler/cljs-karaoke-client 
+
+
 ## Requirement
 
 Should be simple UI like google.
