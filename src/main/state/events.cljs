@@ -1,7 +1,7 @@
 (ns state.events
   (:require
    [re-frame.core :as rf]
-   [state.db :as db]))
+   [state.db :refer [default-db default-development-settings default-user-settings]]))
 
 ; v3 Above version, When app re-loads it will overwrite whole database.
 ; Eric is opinionated that improvement can be made by only setting default key rather then replacing whole db with default.
@@ -11,17 +11,32 @@
 (rf/reg-event-fx
  ::initialize-db
  (fn [{:keys [db]} _] ; 1. Take out keys only
-   {:db (merge db db/default-db) ; 2. Replace default original DB only.
+   {:db (merge db default-db) ; 2. Replace default original DB only.
     ; :ajax {} ;  Can add more initial effects here like ajax calls.
     }
    ))
 
+
+(comment
+  (println default-db)
+  (pr-str default-db)
+  (pr-str default-development-settings)
+  (pr-str default-user-settings)
+  (pr-str (type default-db))
+  
+  (merge default-db default-user-settings)
+  )
+
+
 (rf/reg-event-db
  ::initialize-db-dev
  (fn [db]
-   (assoc-in db [:dev :dev?] false)
-   (assoc-in db [:dev :dev-panel?] false))  ;; TODO: Pull this out to config file.
- )
+   (merge db default-development-settings)))
+
+(rf/reg-event-db
+ ::initialize-db-user-settings
+ (fn [db]
+   (merge db default-user-settings)))
 
 #_(rf/reg-event-db
  ::set-active-panel

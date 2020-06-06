@@ -59,10 +59,72 @@
        (when @(get-in @state [:dev?]) [dev-panel [state]])])
     (finally (js/clearInterval timer-fn))))
 
+(defn pomodoro-simple--options []
+  (reagent/with-let [state (reagent/atom {:start (.now js/Date)
+                                          :now (date-fns/addMinutes (.now js/Date) 25)
+                                          ;; :now (date-fns/addSeconds (.now js/Date) 5)
+                                          :ms-visible? false
+                                          :ms-placement "bottom"
+
+                                          :start? true
+                                          :finished? false
+                                          :dev? (rf/subscribe [:dev?])}) ; Seems not reactive if I destructure here
+                     timer-fn     (js/setInterval
+                                   (fn []
+                                     (swap! state assoc-in [:start] (.now js/Date))
+                                     (when (= 0 (date-fns/differenceInSeconds (get-in @state [:now]) (get-in @state [:start])))
+                                       (swap! state assoc-in [:finished?] true)))
+                                   70)]
+    (let [compound-duration-all (seconds->duration (date-fns/differenceInSeconds (get-in @state [:now]) (get-in @state [:start])))
+          compound-duration-filtered (dissoc compound-duration-all :w :d)
+          ms (when (get-in @state [:start?]) (mod (date-fns/differenceInMilliseconds (get-in @state [:now]) (get-in @state [:start])) 1000))
+          compound-duration-plus-ms (assoc compound-duration-filtered :ms ms)
+          compound-duration (cond
+                              (get-in @state [:finished?]) {:h 0 :m 0 :s 0 :ms 0}
+                              (get-in @state [:start?]) compound-duration-plus-ms
+                              :else {:h 0 :m 0 :s 0 :ms 0})]
+      [:div.flex.flex-col.items-center.justify-center.content-center.self-center
+       [:div.flex.flex-row 
+        [:div#timer-label.btn.hidden "Session"] ; HIDDEN. Here for Freecodecamp requirement
+        [:div#session-length.btn.hidden "25"] ; TODO: Get value from state     HIDDEN. Here for Freecodecamp requirement
+        [:div#time-left.btn.hidden "25:00 (mm:ss format)"] ; TODO: Get value from state     HIDDEN. Here for Freecodecamp requirement
+        [:button#session-decrement.btn.btn-nav "-"]
+        [:div.flex.flex-row.text-6xl.tracking-wide.leading-none.text-teal-500.text-opacity-100.cursor-pointer.select-none
+         {:on-click #(swap! state update-in [:ms-visible?] not)}
+         [clock/digital-clean {:compound-duration compound-duration
+                               :ms-placement (get-in @state [:ms-placement])
+                               :ms-visible? (get-in @state [:ms-visible?])}]
+         #_[:div.text-base.tracking-wide.leading-none.text-teal-500.text-opacity-100.mt-2 ms]]
+        [:button#session-increment.btn.btn-nav "+"]]
+       (when (get-in @state [:ms?]) [:div.text-base.tracking-wide.leading-none.text-teal-500.text-opacity-100.mt-2 ms])
+       [:div.flex.flex-row.mt-5.text-xl
+        [:div.flex.flex-row
+         [:div#break-label.btn.hidden "Break Length"] ; HIDDEN. Here for Freecodecamp requirement
+         [:button#break-decrement.btn.btn-nav "-"]
+         [:div#break-length.btn.btn-nav "5"]
+         [:button#reset.btn.btn-nav.mr-2 {:on-click (fn [e]
+                                                      (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 25))
+                                                      (swap! state assoc-in [:now] (date-fns/addMinutes (.now js/Date) 25)))}
+          "Reset"]
+         [:button#break-increment.btn.btn-nav "+"]]
+        [:button.btn.btn-nav.mr-2 {:on-click (fn [e]
+                                               (rf/dispatch [:dev/dev-switch]))}
+         "dev: " (pr-str @(rf/subscribe [:dev?]))]
+        [:button#start_stop.btn.btn-nav {:on-click (fn [e]
+                                          (swap! state update-in [:start?] not)
+                                          (swap! state assoc-in [:finished?] false)
+                                          (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 25))
+                                          (swap! state assoc-in [:now] (date-fns/addMinutes (.now js/Date) 25)))}
+         (if (get-in @state [:start?]) "Stop" "Start")]]
+       (when @(get-in @state [:dev?]) [dev-panel [state]])])
+    (finally (js/clearInterval timer-fn))))
+
 (defn pomodoro-panel-nav []
-  [:div.flex-center.h-full
-   [pomodoro-simple]
-   ])
+  (let [nav-styled? (reagent/atom false)]
+    (fn []
+      [:div.flex-center.h-full
+       [:div.mb-5 (if @nav-styled? [:button.btn.btn-nav {:on-click #(swap! nav-styled? not)} "Adv"] [:button.btn.btn-nav {:on-click #(swap! nav-styled? not)} "Clean"])]
+       [:div.flex-center.h-full.w-full (if @nav-styled? [pomodoro-simple] [:div [pomodoro-simple--options]])]])))
 
 (defn pomodoro-page-container []
   [:main [pomodoro-panel-nav]])

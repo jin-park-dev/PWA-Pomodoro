@@ -65,6 +65,7 @@
 (defn init []
   ; Add other initalization here if needed such as ajax call for inital data
   (rf/dispatch-sync [::events/initialize-db])  ; Difference with dispatch is this is synchronous (unlike dispatch which is asynchronous). Guarantees this line is done before next.
+  (rf/dispatch-sync [::events/initialize-db-user-settings]) ; Default user settings
   (rf/dispatch-sync [::events/initialize-db-dev]) ; Inital dev setting
   (start) ; Reagent (react)
   (stylefy/init))
