@@ -103,6 +103,8 @@ For full table of examples.
 
 ### Links
 
+Following HTML5 Standard strictly - https://html.spec.whatwg.org/multipage/ https://www.html5tutorial.info 
+
 
 ## Getting Started
 
