@@ -64,12 +64,14 @@
 (defn pomodoro-simple--options []
   (reagent/with-let [state (reagent/atom {:start (.now js/Date)
                                           :now (date-fns/addMinutes (.now js/Date) 25)
-                                          ;; :now (date-fns/addSeconds (.now js/Date) 5)
                                           :ms-visible? false
                                           :ms-placement "bottom"
 
                                           :start? true
                                           :finished? false
+                                          
+                                          :value-break 5  ;default break of 5 minutes
+                                          
                                           :dev? (rf/subscribe [:dev?])}) ; Seems not reactive if I destructure here
                      timer-fn     (js/setInterval
                                    (fn []
@@ -87,7 +89,10 @@
                               :else {:h 0 :m 0 :s 0 :ms 0})]
       [:div.flex.flex-col.items-center.justify-center.content-center.self-center
                [:div#break-label.btn.hidden "Break Length"] ; HIDDEN. Here for Freecodecamp requirement
-       [input/number {:value 123 :class "transition-25to100 mb-10"}]
+       [input/number {:value (get-in @state [:value-break])
+                      :handle-change (fn [] (swap! state update-in [:value-break] dec))
+                      :handle+change (fn [] (swap! state update-in [:value-break] inc))
+                      :class "transition-25to100 mb-10"}]
        [:div.flex.flex-row 
         [:div#timer-label.btn.hidden "Session"] ; HIDDEN. Here for Freecodecamp requirement
         [:div#session-length.btn.hidden "25"] ; TODO: Get value from state     HIDDEN. Here for Freecodecamp requirement
