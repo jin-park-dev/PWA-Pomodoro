@@ -62,16 +62,23 @@
        (when @(get-in @state [:dev?]) [dev-panel [state]])])
     (finally (js/clearInterval timer-fn))))
 
+; date-fns unlike moments does not have duration I can use. I have to caclculate time to get any duration
+; This mut be done since js interval are not safe and will go out of sync
 (defn pomodoro-simple--options []
-  (reagent/with-let [state (reagent/atom {:start (.now js/Date)
+  (reagent/with-let [state (reagent/atom {:start (.now js/Date)  ; This will mutate to keep tract of time.
                                           :now (date-fns/addMinutes (.now js/Date) 25)
+                                          ;; :now (date-fns/add (.now js/Date) {:minutes 5 :seconds 1})
                                           :ms-visible? false
                                           :ms-placement "bottom"
 
                                           :start? true
                                           :finished? false
 
-                                          :value-break 5  ;default break of 5 minutes
+                                          :value-break-start (.now js/Date)
+                                          :value-break-end (date-fns/addMinutes (.now js/Date) 5)  ;default break of 5 minutes. Gives 4. diff in ms must be rounded down.
+                                          ;; :value-break-end (date-fns/addSeconds (.now js/Date) (+ 1 (* 5 60)))  ;default break of 5 minutes. Gives 4. diff in ms must be rounded down.
+                                          ;; :value-break (date-fns/add (.now js/Date) {:minutes 5 :seconds 1})  ;default break of 5 minutes
+                                          ;; :value-
 
                                           :dev? (rf/subscribe [:dev?])}) ; Seems not reactive if I destructure here
                      timer-fn     (js/setInterval
@@ -87,13 +94,19 @@
           compound-duration (cond
                               (get-in @state [:finished?]) {:h 0 :m 0 :s 0 :ms 0}
                               (get-in @state [:start?]) compound-duration-plus-ms
-                              :else {:h 0 :m 0 :s 0 :ms 0})]
+                              :else {:h 0 :m 0 :s 0 :ms 0})
+          value-break (date-fns/differenceInMinutes (get-in @state [:value-break-end]) (get-in @state [:value-break-start]))]
+      ;; (println (get-in @state [:start]))
+      ;; (println (get-in @state [:now]))
+      ;; (println (get-in @state [:value-break]))
+      ;; (println "value-break-diff: " value-break)
+      ;; (println "")
       [:div.flex.flex-col.items-center.justify-center.content-center.self-center
        [:div#break-label.btn.hidden "Break Length"] ; HIDDEN. Here for Freecodecamp requirement
        [:div {:data-tip "Break Length"}
-        [input/number {:value (get-in @state [:value-break])
-                       :handle-change (fn [] (swap! state update-in [:value-break] dec))
-                       :handle+change (fn [] (swap! state update-in [:value-break] inc))
+        [input/number {:value value-break
+                       :handle-change (fn [] (swap! state update-in [:value-break-end] (fn [v] (date-fns/subMinutes v 1))))
+                       :handle+change (fn [] (swap! state update-in [:value-break-end](fn [v] (date-fns/addMinutes v 1))))
                        :class "transition-25to100 mb-10"}]
         [:> ReactTooltip {:place "top"  ; This tooltip can be place anywhere. 
                           :type "light"  ;dark is default
