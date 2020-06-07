@@ -96,6 +96,7 @@
                               (get-in @state [:start?]) compound-duration-plus-ms
                               :else {:h 0 :m 0 :s 0 :ms 0})
           value-break (date-fns/differenceInMinutes (get-in @state [:value-break-end]) (get-in @state [:value-break-start]))]
+      ;; (when (< value-break 0) (swap! state update-in [:value-break-end] (.now js/Date)))
       ;; (println (get-in @state [:start]))
       ;; (println (get-in @state [:now]))
       ;; (println (get-in @state [:value-break]))
@@ -105,9 +106,11 @@
        [:div#break-label.btn.hidden "Break Length"] ; HIDDEN. Here for Freecodecamp requirement
        [:div {:data-tip "Break Length"}
         [input/number {:value value-break
+                       :class "transition-25to100 mb-10"
                        :handle-change (fn [] (swap! state update-in [:value-break-end] (fn [v] (date-fns/subMinutes v 1))))
-                       :handle+change (fn [] (swap! state update-in [:value-break-end](fn [v] (date-fns/addMinutes v 1))))
-                       :class "transition-25to100 mb-10"}]
+                       :handle+change (fn [] (swap! state update-in [:value-break-end] (fn [v] (date-fns/addMinutes v 1))))
+                       :validation-button (<= value-break 0) ; When 0 or smaller don't let value get smaller.
+                       }]
         [:> ReactTooltip {:place "top"  ; This tooltip can be place anywhere. 
                           :type "light"  ;dark is default
                           :effect "solid"}]]
@@ -116,7 +119,7 @@
         [:div#timer-label.btn.hidden "Session"] ; HIDDEN. Here for Freecodecamp requirement
         [:div#session-length.btn.hidden "25"] ; TODO: Get value from state     HIDDEN. Here for Freecodecamp requirement
         [:div#time-left.btn.hidden "25:00 (mm:ss format)"] ; TODO: Get value from state     HIDDEN. Here for Freecodecamp requirement
-
+        
         [:button#session-decrement.btn.btn-nav.rounded-l-full.rounded-r.self-center.transition-25to100 "-"]
         [:div.flex.flex-row.text-6xl.tracking-wide.leading-none.text-teal-500.text-opacity-100.cursor-pointer.select-none.mx-12
          {:on-click #(swap! state update-in [:ms-visible?] not)}
