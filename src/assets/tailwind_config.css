@@ -50,4 +50,12 @@ nav {
     @apply bg-gray-100;
 }
 
+
+.transition-25to100 {
+    @apply opacity-25 ease-in-out duration-200
+}
+.transition-25to100:hover {
+    @apply opacity-100
+}
+
 @tailwind utilities;

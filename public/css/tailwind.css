@@ -726,6 +726,16 @@ nav {
   background-color: rgba(247, 250, 252, var(--bg-opacity));
 }
 
+.transition-25to100 {
+  opacity: 0.25;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms
+}
+
+.transition-25to100:hover {
+  opacity: 1
+}
+
 .space-y-0 > :not(template) ~ :not(template) {
   --space-y-reverse: 0;
   margin-top: calc(0px * calc(1 - var(--space-y-reverse)));

@@ -92,3 +92,16 @@ main {
   align-items: center;      /* new */
   justify-items: center;    /* new */
 }
+
+
+
+.button-hover {
+  /* font-size: 100px; */
+  /* color: #000; */
+  transition: opacity 1s ease-in-out;
+  opacity: 0.25;
+}
+
+.button-hover:hover {
+  opacity: 1;
+}

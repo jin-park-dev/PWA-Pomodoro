@@ -3,7 +3,9 @@
 
 (def default-db {:name "PWAdoro"})
 
-(def default-development-settings {:dev {:dev? false}})
+(def default-development-settings {:dev {:dev? true
+                                         :dev-panel? true
+                                         }})
 
 (def default-user-settings {:dev {:dev? false}
                             :ui {:clock {:nav "simple"}

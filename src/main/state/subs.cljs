@@ -17,7 +17,7 @@
 (rf/reg-sub
  :dev-panel?
  (fn [db]
-   (get-in db [:dev :dev?])))
+   (get-in db [:dev :dev-panel?])))
 
 
 (comment

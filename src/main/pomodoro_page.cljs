@@ -84,38 +84,39 @@
                               (get-in @state [:start?]) compound-duration-plus-ms
                               :else {:h 0 :m 0 :s 0 :ms 0})]
       [:div.flex.flex-col.items-center.justify-center.content-center.self-center
+       [:div.flex.flex-row.mb-10.transition-25to100
+        [:div#break-label.btn.hidden "Break Length"] ; HIDDEN. Here for Freecodecamp requirement
+        [:button#break-decrement.btn.btn-nav "-"]
+        [:div#break-length.btn.btn-nav.mx-4 "5"]
+        [:button#break-increment.btn.btn-nav "+"]]
        [:div.flex.flex-row 
         [:div#timer-label.btn.hidden "Session"] ; HIDDEN. Here for Freecodecamp requirement
         [:div#session-length.btn.hidden "25"] ; TODO: Get value from state     HIDDEN. Here for Freecodecamp requirement
         [:div#time-left.btn.hidden "25:00 (mm:ss format)"] ; TODO: Get value from state     HIDDEN. Here for Freecodecamp requirement
-        [:button#session-decrement.btn.btn-nav "-"]
-        [:div.flex.flex-row.text-6xl.tracking-wide.leading-none.text-teal-500.text-opacity-100.cursor-pointer.select-none
+        
+        [:button#session-decrement.btn.btn-nav.rounded-l-full.rounded-r.self-center.transition-25to100 "-"]
+        [:div.flex.flex-row.text-6xl.tracking-wide.leading-none.text-teal-500.text-opacity-100.cursor-pointer.select-none.mx-12
          {:on-click #(swap! state update-in [:ms-visible?] not)}
          [clock/digital-clean {:compound-duration compound-duration
                                :ms-placement (get-in @state [:ms-placement])
                                :ms-visible? (get-in @state [:ms-visible?])}]
          #_[:div.text-base.tracking-wide.leading-none.text-teal-500.text-opacity-100.mt-2 ms]]
-        [:button#session-increment.btn.btn-nav "+"]]
+        [:button#session-increment.btn.btn-nav.rounded-r-full.rounded-l.self-center.transition-25to100 "+"]]
        (when (get-in @state [:ms?]) [:div.text-base.tracking-wide.leading-none.text-teal-500.text-opacity-100.mt-2 ms])
-       [:div.flex.flex-row.mt-5.text-xl
-        [:div.flex.flex-row
-         [:div#break-label.btn.hidden "Break Length"] ; HIDDEN. Here for Freecodecamp requirement
-         [:button#break-decrement.btn.btn-nav "-"]
-         [:div#break-length.btn.btn-nav "5"]
-         [:button#reset.btn.btn-nav.mr-2 {:on-click (fn [e]
-                                                      (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 25))
-                                                      (swap! state assoc-in [:now] (date-fns/addMinutes (.now js/Date) 25)))}
-          "Reset"]
-         [:button#break-increment.btn.btn-nav "+"]]
-        [:button.btn.btn-nav.mr-2 {:on-click (fn [e]
-                                               (rf/dispatch [:dev/dev-switch]))}
-         "dev: " (pr-str @(rf/subscribe [:dev?]))]
+       [:div.flex.flex-row.mt-10.text-xl.transition-25to100.opacity-50
+        [:button#reset.btn.btn-nav.mr-8 {:on-click (fn [e]
+                                                     (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 25))
+                                                     (swap! state assoc-in [:now] (date-fns/addMinutes (.now js/Date) 25)))}
+         "Reset"]
         [:button#start_stop.btn.btn-nav {:on-click (fn [e]
                                           (swap! state update-in [:start?] not)
                                           (swap! state assoc-in [:finished?] false)
                                           (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 25))
                                           (swap! state assoc-in [:now] (date-fns/addMinutes (.now js/Date) 25)))}
          (if (get-in @state [:start?]) "Stop" "Start")]]
+        #_[:button.btn.btn-nav.mt-2 {:on-click (fn [e]
+                                                 (rf/dispatch [:dev/dev-switch]))}
+           "dev: " (pr-str @(rf/subscribe [:dev?]))]
        (when @(get-in @state [:dev?]) [dev-panel [state]])])
     (finally (js/clearInterval timer-fn))))
 

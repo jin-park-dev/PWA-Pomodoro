@@ -46,11 +46,16 @@
                     :class "nav nav-link"} "Pomodoro"]]
       (when @(rf/subscribe [:dev-panel?])
         [:li.mr-6.cursor-pointer.text-sm
-         [:a.nav.nav-link.text-blue-700
+         [:a.nav.nav-link.text-indigo-400
           {:on-click (fn [e]
                        (.preventDefault e)
-                       (rf/dispatch [:dev/dev-switch]))}
-          "dev:" (pr-str @(rf/subscribe [:dev?]))]])]]
+                      ;;  (rf/dispatch [:dev/dev-panel-switch])
+                       (rf/dispatch [:dev/dev-switch])
+                       )}
+          ;; TODO: Enable/disable menu which also enables dev in future. Right now panel doesn't do aynthing so leaving this as general dev mode on/off
+          ;; "dev-menu:" (pr-str @(rf/subscribe [:dev-panel?]))
+          "dev-menu:" (pr-str @(rf/subscribe [:dev?]))
+          ]])]]
 
     [:> Route {:path "/" :exact true :component IndexPageContainer}]
     [:> Route {:path "/clock/" :component ClockPageContainer}]
