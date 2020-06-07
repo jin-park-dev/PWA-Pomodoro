@@ -7,7 +7,9 @@
    [date-fns :as date-fns]
    [util.time :refer [seconds->duration]]
    [util.dev :refer [dev-panel]]
-   [component.clock :as clock]))
+   [component.clock :as clock]
+   [component.input :as input]
+   ))
 
 
 (defn pomodoro-simple []
@@ -84,11 +86,8 @@
                               (get-in @state [:start?]) compound-duration-plus-ms
                               :else {:h 0 :m 0 :s 0 :ms 0})]
       [:div.flex.flex-col.items-center.justify-center.content-center.self-center
-       [:div.flex.flex-row.mb-10.transition-25to100
-        [:div#break-label.btn.hidden "Break Length"] ; HIDDEN. Here for Freecodecamp requirement
-        [:button#break-decrement.btn.btn-nav "-"]
-        [:div#break-length.btn.btn-nav.mx-4 "5"]
-        [:button#break-increment.btn.btn-nav "+"]]
+               [:div#break-label.btn.hidden "Break Length"] ; HIDDEN. Here for Freecodecamp requirement
+       [input/number {:value 123 :class "transition-25to100 mb-10"}]
        [:div.flex.flex-row 
         [:div#timer-label.btn.hidden "Session"] ; HIDDEN. Here for Freecodecamp requirement
         [:div#session-length.btn.hidden "25"] ; TODO: Get value from state     HIDDEN. Here for Freecodecamp requirement
@@ -121,11 +120,11 @@
     (finally (js/clearInterval timer-fn))))
 
 (defn pomodoro-panel-nav []
-  (let [nav-styled? (reagent/atom false)]
+  (let [nav-styled? (reagent/atom true)]
     (fn []
       [:div.flex-center.h-full
        [:div.mb-5 (if @nav-styled? [:button.btn.btn-nav {:on-click #(swap! nav-styled? not)} "Adv"] [:button.btn.btn-nav {:on-click #(swap! nav-styled? not)} "Clean"])]
-       [:div.flex-center.h-full.w-full (if @nav-styled? [pomodoro-simple] [:div [pomodoro-simple--options]])]])))
+       [:div.flex-center.h-full.w-full (if @nav-styled? [pomodoro-simple--options] [:div [pomodoro-simple]])]])))
 
 (defn pomodoro-page-container []
   [:main [pomodoro-panel-nav]])
