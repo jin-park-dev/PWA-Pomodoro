@@ -52,6 +52,26 @@ https://github.com/loganpowell/shadow-proto-starter
 https://github.com/iku000888/shadow-cljs-kitchen-async-puppeteer 
 https://github.com/baskeboler/cljs-karaoke-client 
 
+## Animation research 
+
+### React
+
+React-Spring chosen. non-hook version is still supported
+
+https://www.react-spring.io - "Both render-props and hooks will be kept and maintained for the forseeable future."
+https://www.framer.com/api/ - Uses hook so not compatible with re-agent
+https://github.com/nearform/react-animation - 3rd option
+
+### JS
+
+By popularity
+
+https://github.com/juliangarnier/anime
+https://github.com/mojs/mojs
+https://maxwellito.github.io/vivus/
+https://github.com/IanLunn/Hover
+https://github.com/thednp/kute.js/
+
 
 ## Requirement
 
