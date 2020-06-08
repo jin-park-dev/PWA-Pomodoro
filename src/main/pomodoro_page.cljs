@@ -90,9 +90,17 @@
 
                                           :dev? (rf/subscribe [:dev?])}) ; Seems not reactive if I destructure here
 
+                     
+                     next-timer-animate (reagent/atom "invisible")
+                     
+                     next-timer-animate-fn (fn []
+                                             (reset! next-timer-animate "animate__fadeIn")
+                                             (js/setTimeout (fn [] (reset! next-timer-animate "animate__fadeOut")) 1200)
+                                             )
+                     
                      timer-id (reagent/atom nil) ;setInterval id
 
-                     timer-fn     (fn [] (js/setInterval
+                     timer-fn (fn [] (js/setInterval
                                           (fn []
                                             (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))
                                             (when (= 0 (date-fns/differenceInSeconds (get-in @state [:end]) (get-in @state [:start])))
@@ -163,9 +171,13 @@
           ;;                             running? compound-duration-plus-ms
           ;;                             finished? {:h 0 :m 0 :s 0 :ms 0} ; Now this doesn't need to be hard coded and actual calculation should give same. Also interval should stop and not countdown below
           ;;                             :else compound-duration-plus-ms #_{:h 1 :m 2 :s 3 :ms 4})
+          
+          next-timer-animate-fn-logic (when (or running? finished?) next-timer-animate-fn)
           ]
       [:div.flex.flex-col.items-center.justify-center.content-center.self-center
-       #_[:div.absolute.opacity-50 [clock/digital-clean {:compound-duration {:h 0 :m next-pomo-length :s 0 :ms 0}}]]
+       ; Using centered allows this to stay mostly middle with temporary coming in and out. Possible for mobile this needs media query. Visible
+       [:div.opacity-50.centered.animate__animated.animate__faster {:class @next-timer-animate}  ; invisible as default stays in DOM if this converts into flex box.
+        [clock/digital-clean {:compound-duration {:h 0 :m next-pomo-length :s 0 :ms 0}}]]
        [:div.flex
         [:div#timer-label.btn.hidden "Session"] ; HIDDEN. Here for freeCodeCamp Requirement
         [:div#session-length.btn.hidden "25"] ; TODO: Get value from state     HIDDEN. Here for freeCodeCamp Requirement
@@ -196,7 +208,9 @@
 
        [:div.flex.flex-row
         [:button#session-decrement.btn.btn-nav.rounded-l-full.rounded-r.self-center.transition-25to100
-         {:on-click (fn [] (swap! state update-in [:value-next-end] (fn [v] (date-fns/subMinutes v 1))))}
+         {:on-click (fn [] 
+                      (swap! state update-in [:value-next-end] (fn [v] (date-fns/subMinutes v 1)))
+                      (next-timer-animate-fn-logic))}
          "-"]
         [:div.flex.flex-row.text-6xl.tracking-wide.leading-none.text-teal-500.text-opacity-100.cursor-pointer.select-none.mx-12
          {:on-click #(swap! state update-in [:ms-visible?] not)}
@@ -206,7 +220,9 @@
                                :ms-visible? (get-in @state [:ms-visible?])}]
          #_[:div.text-base.tracking-wide.leading-none.text-teal-500.text-opacity-100.mt-2 ms]]
         [:button#session-increment.btn.btn-nav.rounded-r-full.rounded-l.self-center.transition-25to100
-         {:on-click (fn [] (swap! state update-in [:value-next-end] (fn [v] (date-fns/addMinutes v 1))))}
+         {:on-click (fn []
+                      (swap! state update-in [:value-next-end] (fn [v] (date-fns/addMinutes v 1)))
+                      (next-timer-animate-fn-logic))}
          "+"]]
        (when (get-in @state [:ms?]) [:div.text-base.tracking-wide.leading-none.text-teal-500.text-opacity-100.mt-2 ms])
        [:div.flex.flex-row.mt-10.text-xl.transition-25to100.opacity-50

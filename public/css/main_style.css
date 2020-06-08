@@ -132,3 +132,12 @@ main {
 .button-hover:hover {
   opacity: 1;
 }
+
+
+.centered {
+  position: fixed;
+  top: 38%;
+  left: 50%;
+  /* bring your own prefixes */
+  transform: translate(-50%, -50%);
+}
