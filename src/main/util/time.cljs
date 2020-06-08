@@ -25,3 +25,13 @@
   (seconds->duration 66)
   (seconds->duration 66)
   )
+
+;; pos? Misses 0. have to use "not neg" because of it, or between like below.
+(defn humanize-double-digit
+  "takes value and if it in single digit add, 0 in front.
+  Only works for positive number.
+  Returns string"
+  [number]
+  (if (< -1 number 10) ; 0-9 number only
+    (str "0" number)
+    (str number)))

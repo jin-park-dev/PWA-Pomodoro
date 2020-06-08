@@ -1,7 +1,8 @@
 (ns component.clock
   (:require [reagent.core :as reagent]
             [stylefy.core :as stylefy :refer [use-style]]
-            [date-fns :as date-fns]))
+            [date-fns :as date-fns]
+            [util.time :refer [humanize-double-digit]]))
 
 
 (defn digital-clean
@@ -11,13 +12,16 @@
    placement - right, bottom, nil
    "
   [{:keys [compound-duration ms-placement ms-visible?]
-    :or   {compound-duration {:h 0 :m 0 :s 0 :ms 0}  ; default if no number
+    :or   {compound-duration {:h 0 :m 0 :s "00" :ms 0}  ; default if no number
            ms-placement "bottom"
            ms-visible? false}}]
-  (let [_compound-duration (dissoc compound-duration :ms)
+  (let [_compound-duration-filtered (dissoc compound-duration :ms)
+        _compound-duration (update _compound-duration-filtered :s humanize-double-digit)
         ms (:ms compound-duration 0)
         _ms-placement (when ms-visible? ms-placement)
         ]
+    (pr-str _compound-duration)
+    (js/console.log (:s _compound-duration))
     [:div.flex.flex-col.items-center.justify-center.content-center.self-center
      [:div.flex.flex-row.text-6xl.tracking-wide.leading-none.text-teal-500.text-opacity-100.cursor-pointer.select-none
       (doall

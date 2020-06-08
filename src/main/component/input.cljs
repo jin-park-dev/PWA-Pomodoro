@@ -1,6 +1,7 @@
 (ns component.input
   (:require [reagent.core :as reagent]
-            [stylefy.core :as stylefy :refer [use-style]]))
+            [stylefy.core :as stylefy :refer [use-style]]
+            ))
 
 (def btn-invalid {:disabled true :class "cursor-not-allowed"})
 
