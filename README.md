@@ -93,8 +93,11 @@ Shadow CLJS - https://shadow-cljs.github.io/docs/UsersGuide.html
 Reagent - https://cljdoc.org/d/reagent/reagent/1.0.0-alpha2/doc/tutorials/react-features
 concurrently - https://www.npmjs.com/package/concurrently
 
+animate css - https://animate.style/
 
 concurrently npm:watch-js = npm run watch-js
+
+calva evaulate shortcuts - https://calva.io/commands-top10/
 
 
 ### Decision
