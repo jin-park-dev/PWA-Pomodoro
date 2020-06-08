@@ -6,7 +6,7 @@
    [stylefy.core :as stylefy :refer [use-style]]
    [date-fns :as date-fns]
    ["react-tooltip" :as ReactTooltip]
-   [util.time :refer [seconds->duration]]
+   [util.time :refer [seconds->duration diff-in-duration]]
    [util.dev :refer [dev-panel]]
    [component.clock :as clock]
    [component.input :as input]))
@@ -32,7 +32,7 @@
                                               (swap! state assoc-in [:finished?] true)))
                                           70))
                      ]
-    (let [compound-duration-all (seconds->duration (date-fns/differenceInSeconds (get-in @state [:now]) (get-in @state [:start])))
+    (let [compound-duration-all (diff-in-duration (get-in @state [:now]) (get-in @state [:start]))
           compound-duration-filtered (dissoc compound-duration-all :w :d)
           ms (when (get-in @state [:start?]) (mod (date-fns/differenceInMilliseconds (get-in @state [:now]) (get-in @state [:start])) 1000))
           compound-duration-plus-ms (assoc compound-duration-filtered :ms ms)
@@ -53,7 +53,7 @@
                                                  (rf/dispatch [:dev/dev-switch]))}
            "dev: " (pr-str @(rf/subscribe [:dev?]))]
         [:button.btn.btn-nav {:on-click (fn [e]
-                                          (cond (get-in @state [:start?]) (js/clearInterval @timer-id) ; Stop
+                                          (cond (get-in @state [:start?]) (js/clearInterval @timer-id) ; Stop Timer
                                                 (not (get-in @state [:start?])) (swap! timer-id timer-fn)) ; Start timer
                                           (println "on-click after cond")
                                           (swap! state update-in [:start?] not)
@@ -68,9 +68,9 @@
 ; This mut be done since js interval are not safe and will go out of sync
 (defn pomodoro-simple--options []
   (reagent/with-let [state (reagent/atom {; This will mutate to keep track of the time.
-                                          :start (date-fns/addMinutes (.now js/Date) 0)#_(.now js/Date)
-                                          :startABC (date-fns/addMinutes (.now js/Date) 1)
-                                          :now (date-fns/addMinutes (.now js/Date) 25) #_(date-fns/addMinutes (.now js/Date) 25)
+                                          :start (date-fns/addMinutes (.now js/Date) 0)
+                                          :now (date-fns/addSeconds (.now js/Date) 5)
+                                          ;; :now (date-fns/addMinutes (.now js/Date) 25)
 
                                           :ms-visible? false
                                           :ms-placement "bottom"  ; bottom, right, nil
@@ -92,22 +92,29 @@
                                           :dev? (rf/subscribe [:dev?])}) ; Seems not reactive if I destructure here
                      
                      timer-id (reagent/atom nil) ;setInterval id
-                     
-                     def-timer-fn     (fn [] (js/setInterval
+                                          
+                     timer-fn     (fn [] (js/setInterval
                                               (fn []
-                                                (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0)#_(.now js/Date))
+                                                (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))
                                                 (when (= 0 (date-fns/differenceInSeconds (get-in @state [:now]) (get-in @state [:start])))
                                                   (swap! state assoc-in [:finished?] true)))
                                               70))
+                     fn-reset (fn [e]
+                                (js/clearInterval @timer-id)
+                                (swap! state assoc-in [:start?] false)
+                                (swap! state assoc-in [:finished?] false)
+                                (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))
+                                (swap! state assoc-in [:now] (date-fns/addMinutes (.now js/Date) 25)))
                      
-                    ;;  timer-fn     (js/setInterval
-                    ;;                (fn []
-                    ;;                  (swap! state assoc-in [:start] (.now js/Date))
-                    ;;                  (when (= 0 (date-fns/differenceInSeconds (get-in @state [:now]) (get-in @state [:start])))
-                    ;;                    (swap! state assoc-in [:finished?] true)))
-                    ;;                70)
+                     fn-start (fn [e next-pomo-length]
+                                (swap! state update-in [:start?] not)
+                                (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))
+                                (swap! state assoc-in [:now] (date-fns/addMinutes (.now js/Date) next-pomo-length))
+                                #_(swap! state assoc-in [:now] (date-fns/addSeconds (.now js/Date) 2))
+                                (swap! timer-id timer-fn))
+
                      ]
-    (let [compound-duration-all (seconds->duration (date-fns/differenceInSeconds (get-in @state [:now]) (get-in @state [:start])))
+    (let [compound-duration-all (diff-in-duration (get-in @state [:now]) (get-in @state [:start])) #_(seconds->duration (date-fns/differenceInSeconds (get-in @state [:now]) (get-in @state [:start])))
           compound-duration-filtered (dissoc compound-duration-all :w :d)
           ms (when (get-in @state [:start?]) (mod (date-fns/differenceInMilliseconds (get-in @state [:now]) (get-in @state [:start])) 1000))
           compound-duration-plus-ms (assoc compound-duration-filtered :ms ms)
@@ -115,16 +122,15 @@
                               (get-in @state [:finished?]) {:h 0 :m 0 :s 0 :ms 0}
                               (get-in @state [:start?]) compound-duration-plus-ms
                               :else compound-duration-plus-ms #_{:h 1 :m 2 :s 3 :ms 4})
-          break-length (date-fns/differenceInMinutes (get-in @state [:value-break-end]) (get-in @state [:value-break-start]))
-          next-pomo-length (date-fns/differenceInMinutes (get-in @state [:value-next-end]) (get-in @state [:value-next-start]))
+          break-length (date-fns/differenceInMinutes (get-in @state [:value-break-end]) (get-in @state [:value-break-start])) ; default 5
+          next-pomo-length (date-fns/differenceInMinutes (get-in @state [:value-next-end]) (get-in @state [:value-next-start])) ; default 25
+          finished? (get-in @state [:finished?])
           ]
       ;; (when (< value-break 0) (swap! state update-in [:value-break-end] (.now js/Date)))
       ;; (println (get-in @state [:start]))
       ;; (println (get-in @state [:now]))
       ;; (println (get-in @state [:value-break]))
       ;; (println "value-break-diff: " value-break)
-      (println compound-duration)
-      (println "")
       [:div.flex.flex-col.items-center.justify-center.content-center.self-center
        [:div.flex
         [:div#timer-label.btn.hidden "Session"] ; HIDDEN. Here for freeCodeCamp Requirement
@@ -160,24 +166,26 @@
          "+"]]
        (when (get-in @state [:ms?]) [:div.text-base.tracking-wide.leading-none.text-teal-500.text-opacity-100.mt-2 ms])
        [:div.flex.flex-row.mt-10.text-xl.transition-25to100.opacity-50
-        [:button#reset.btn.btn-nav.mr-8 {:on-click (fn [e]
-                                                     (println "========")
+        [:button#reset.btn.btn-nav.mr-8 {:on-click (fn [e] (fn-reset e))
+                                         
+                                         #_(fn [e]
                                                      (js/clearInterval @timer-id)
                                                      (swap! state assoc-in [:start?] false)
-                                                     (swap! state assoc-in [:start] (.now js/Date))
-                                                     
-                                                     (swap! state assoc-in [:now] (date-fns/addMinutes (.now js/Date) 25)))}
-         "Reset"]
-        [:button#start_stop.btn.btn-nav {:on-click (fn [e]
-                                                     (swap! timer-id def-timer-fn)
-                                                     (println timer-id)
-                                                     (pr-str timer-id)
-                                                     (println @timer-id)
-                                                     (pr-str @timer-id)
-                                                     (swap! state update-in [:start?] not)
                                                      (swap! state assoc-in [:finished?] false)
                                                      (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))
                                                      (swap! state assoc-in [:now] (date-fns/addMinutes (.now js/Date) 25)))}
+         "Reset"]
+        [:button#start_stop.btn.btn-nav {:on-click (fn [e] (fn-start e next-pomo-length))
+                                         
+                                         #_(fn [e]
+                                                     (swap! state update-in [:start?] not)
+                                                     (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))
+                                                     (swap! state assoc-in [:now] (date-fns/addMinutes (.now js/Date) next-pomo-length))
+                                                     #_(swap! state assoc-in [:now] (date-fns/addSeconds (.now js/Date) 2))
+                                                     (swap! timer-id timer-fn))
+                                         :disabled finished?
+                                         :class (when finished? "cursor-not-allowed opacity-50")
+                                         }
          (if (get-in @state [:start?]) "Stop" "Start")]]
        #_[:button.btn.btn-nav.mt-2 {:on-click (fn [e]
                                                 (rf/dispatch [:dev/dev-switch]))}
@@ -188,7 +196,7 @@
     ))
 
 (defn pomodoro-panel-nav []
-  (let [nav-styled? (reagent/atom false)]
+  (let [nav-styled? (reagent/atom true)]
     (fn []
       [:div.flex-center.h-full
        [:div.mb-5 (if @nav-styled? [:button.btn.btn-nav {:on-click #(swap! nav-styled? not)} "adv"] [:button.btn.btn-nav {:on-click #(swap! nav-styled? not)} "Clean"])]

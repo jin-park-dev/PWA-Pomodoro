@@ -1,6 +1,7 @@
 (ns util.time
   (:require
-   [clojure.string :as string]))
+   [clojure.string :as string]
+   [date-fns :as date-fns]))
 
 ; https://www.geeksforgeeks.org/converting-seconds-into-days-hours-minutes-and-seconds/
 ; From https://rosettacode.org/wiki/Convert_seconds_to_compound_duration
@@ -25,6 +26,12 @@
   (seconds->duration 66)
   (seconds->duration 66)
   )
+
+(defn diff-in-duration
+  "Takes time 1, time 2 and find difference. Returns hash-map in form of {:w wk :d d :h hr :m min :s sec}"
+  [now start]
+  (seconds->duration (date-fns/differenceInSeconds now start)))
+
 
 ;; pos? Misses 0. have to use "not neg" because of it, or between like below.
 (defn humanize-double-digit

@@ -18,10 +18,7 @@
   (let [_compound-duration-filtered (dissoc compound-duration :ms)
         _compound-duration (update _compound-duration-filtered :s humanize-double-digit)
         ms (:ms compound-duration 0)
-        _ms-placement (when ms-visible? ms-placement)
-        ]
-    (pr-str _compound-duration)
-    (js/console.log (:s _compound-duration))
+        _ms-placement (when ms-visible? ms-placement)]
     [:div.flex.flex-col.items-center.justify-center.content-center.self-center
      [:div.flex.flex-row.text-6xl.tracking-wide.leading-none.text-teal-500.text-opacity-100.cursor-pointer.select-none
       (doall
