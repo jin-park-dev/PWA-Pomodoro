@@ -4,7 +4,7 @@
   (js/console.log "stop"))
 
 (defn ^:dev/after-load start []
-  (js/console.log "start"))
+  (js/console.log "mydev.dev - start"))
 
 
 (defn ssstart []

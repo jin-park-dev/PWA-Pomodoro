@@ -14,7 +14,9 @@
 
    ["react-router-dom" :refer (Route NavLink BrowserRouter)]
 
-   [stylefy.core :as stylefy]))
+   [stylefy.core :as stylefy])
+  )
+
 
 ;; react-router wants react component classes
 (def IndexPageContainer (r/reactify-component index-page-container))
@@ -62,15 +64,16 @@
     [:> Route {:path "/timer/" :component TimerPageContainer}]
     [:> Route {:path "/pomodoro/" :component PomodoroPageContainer}]]])
 
+
 (defn ^:dev/after-load start []
   (d/render [root] (js/document.getElementById "root")))
 
-
 ; Entry point to our app for shadow-cljs system.
 (defn init []
+  
   ; Add other initalization here if needed such as ajax call for inital data
   (rf/dispatch-sync [::events/initialize-db])  ; Difference with dispatch is this is synchronous (unlike dispatch which is asynchronous). Guarantees this line is done before next.
   (rf/dispatch-sync [::events/initialize-db-user-settings]) ; Default user settings
-  (rf/dispatch-sync [::events/initialize-db-dev]) ; Inital dev setting
+  ;; (rf/dispatch-sync [::events/initialize-db-dev]) ; Inital dev setting
   (start) ; Reagent (react)
   (stylefy/init))

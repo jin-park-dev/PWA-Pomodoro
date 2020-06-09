@@ -40,11 +40,16 @@
 
    :output-dir "public/js"  ; Default location
 
-   :devtools {:repl-init-ns app  ; default is cljs.user. Seems to show after first evaulation (press enter) in calva.
+   :modules {:main  ; <- becomes public/js/main.js 
+              {:init-fn app/init!}}  ; Main function to run, entry point to app.
+   
+   :devtools {:before-load app/reload!
+              :repl-init-ns app  ; default is cljs.user. Seems to show after first evaulation (press enter) in calva.
               :repl-pprint true  ; use cljs.pprint instead of pr-str
               :autoload true  ; default for {:target :browser}
+              
               }
-
-   :modules {:main  ; <- becomes public/js/main.js 
-              {:init-fn app/init}}  ; Main function to run, entry point to app.
    }}}
+
+
+:devtools {:after-load app.main/reload!}

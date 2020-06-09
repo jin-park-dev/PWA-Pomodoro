@@ -1,15 +1,11 @@
 ;; shadow-cljs configuration
-{:source-paths
- ["src/dev"
-  "src/main"
-  "src/test"]
+{:dependencies [[reagent "1.0.0-alpha2"] ; Check latest here - https://clojars.org/reagent
+                [stylefy "2.0.0-rc.1"]
+                [re-frame "1.0.0-rc2"]
+                [binaryage/devtools "1.0.2"]  ; https://clojars.org/binaryage/devtools - CLJS Auto add this. preloads in watch and compile if they are on the classpath
+                ]
 
- :dependencies
- [[reagent "1.0.0-alpha2"] ; Check latest here - https://clojars.org/reagent
-  [stylefy "2.0.0-rc.1"]
-  [re-frame "1.0.0-rc2"]
-  [binaryage/devtools "1.0.2"]  ; https://clojars.org/binaryage/devtools - CLJS Auto add this. preloads in watch and compile if they are on the classpath
-  ]
+ :source-paths ["src/mydev" "src/main" "src/test"]
 
  :nrepl {:port 9100}  ; For calva
 
@@ -20,17 +16,16 @@
 ;;  Basic HTTP servers serving - https://shadow-cljs.github.io/docs/UsersGuide.html#dev-http
  :dev-http {9105 "public"}  ; Simple. Default config will work
 
- :builds
- {:app  ; Can be any name I choose
-  {:target :browser
+ :builds {:app  ; Can be any name I choose
+          {:target :browser
 
-   :output-dir "public/js"  ; Default location
-   
-   :devtools {:repl-init-ns app  ; default is cljs.user. Seems to show after first evaulation (press enter) in calva.
-              :repl-pprint true  ; use cljs.pprint instead of pr-str
-              :autoload true  ; default for {:target :browser}
-              }
+           :output-dir "public/js"  ; Default location
 
-   :modules {:main  ; <- becomes public/js/main.js 
-             {:init-fn app/init}}  ; Main function to run, entry point to app.
-   }}}
+           :devtools {:repl-init-ns app  ; default is cljs.user. Seems to show after first evaulation (press enter) in calva.
+                      :repl-pprint true  ; use cljs.pprint instead of pr-str
+                      :autoload true  ; default for {:target :browser}
+                      }
+
+           :modules {:main  ; <- becomes public/js/main.js 
+                     {:init-fn app/init}}  ; Main function to run, entry point to app.
+           }}}
