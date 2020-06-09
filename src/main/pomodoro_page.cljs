@@ -94,11 +94,12 @@
                                           :dev? (rf/subscribe [:dev?])}) ; Seems not reactive if I destructure here
 
                      
-                     next-timer-animate (reagent/atom "invisible")
+                     css-current-session (reagent/atom "invisible")
+                     css-next-timer (reagent/atom "invisible")
                      
-                     next-timer-animate-fn (fn []
-                                             (reset! next-timer-animate "animate__fadeIn")
-                                             (js/setTimeout (fn [] (reset! next-timer-animate "animate__fadeOut")) 1200)
+                     animate-css-fade-fn (fn [css-atom]
+                                             (reset! css-atom "animate__fadeIn")
+                                             (js/setTimeout (fn [] (reset! css-atom "animate__fadeOut")) 1200)
                                              )
                      
                      timer-id (reagent/atom nil) ;setInterval id
@@ -161,7 +162,7 @@
                                   ;;;;;;;;;;;
 
                                   ; Reset break timer.
-                                  (swap! state assoc-in [:value-next-start] (date-fns/addMinutes (.now js/Date) 0))
+                                  (swap! state assoc-in [:value-break-start] (date-fns/addMinutes (.now js/Date) 0))
                                   (swap! state assoc-in [:value-break-end] (date-fns/addMinutes (.now js/Date) 5))))
 
                     ;;  Initial Start
@@ -220,14 +221,18 @@
           ;;                             finished? {:h 0 :m 0 :s 0 :ms 0} ; Now this doesn't need to be hard coded and actual calculation should give same. Also interval should stop and not countdown below
           ;;                             :else compound-duration-plus-ms #_{:h 1 :m 2 :s 3 :ms 4})
           
-          next-timer-animate-fn-logic (if (or running? finished? (not clean?)) next-timer-animate-fn (fn [] nil))
+          next-timer-animate-fn-logic (if (or running? finished? (not clean?))
+                                        (fn [] (animate-css-fade-fn css-next-timer))
+                                        (fn [] nil))
           ]
       [:div.flex.flex-col.items-center.justify-center.content-center.self-center
        ; Using centered allows this to stay mostly middle with temporary coming in and out. Possible for mobile this needs media query. Visible
-       [:div.opacity-50.centered.animate__animated.animate__faster {:class @next-timer-animate}  ; invisible as default stays in DOM if this converts into flex box.
+       [:div.opacity-50.centered.animate__animated.animate__faster {:class @css-next-timer}  ; invisible as default stays in DOM if this converts into flex box.
         ;; [clock/digital-clean {:compound-duration {:h 0 :m next-pomo-length :s 0 :ms 0}}]
         [clock/digital-clean {:compound-duration {:m next-pomo-length}}]]
-       [:div.flex
+       [:div.opacity-50.centered.animate__animated {:class @css-current-session}
+        [:div#timer-label.btn (if break? "Break" "Session")]]
+       [:div.flex.flex-col.items-center.hidden
         [:div#timer-label.btn (if break? "Break" "Session")] ; HIDDEN. Here for freeCodeCamp Requirement
         [:div#session-length.btn (humanize-double-digit (:m next-compound-duration-plus-ms)) #_":" #_(humanize-double-digit (:s next-compound-duration-plus-ms))] ; TODO: Get value from state     HIDDEN. Here for freeCodeCamp Requirement
         [:div#time-left.btn (humanize-double-digit (:m @display-compound-duration)) ":" (humanize-double-digit (:s @display-compound-duration))] ; HIDDEN. Here for freeCodeCamp Requirement. User Story #8 25:00 (mm:ss format)
@@ -274,8 +279,8 @@
          #_[:div.text-base.tracking-wide.leading-none.text-teal-500.text-opacity-100.mt-2 ms]]
         [:button#session-increment.btn.btn-nav.rounded-r-full.rounded-l.self-center.transition-25to100
          (merge {:on-click (fn []
-                       (swap! state update-in [:value-next-end] (fn [v] (date-fns/addMinutes v 1)))
-                       (next-timer-animate-fn-logic))}
+                             (swap! state update-in [:value-next-end] (fn [v] (date-fns/addMinutes v 1)))
+                             (next-timer-animate-fn-logic))}
                 (when (>= next-pomo-length 59) btn-invalid))  ; freeCodeCamp Requirement
          "+"]]
        (when (get-in @state [:ms?]) [:div.text-base.tracking-wide.leading-none.text-teal-500.text-opacity-100.mt-2 ms])
