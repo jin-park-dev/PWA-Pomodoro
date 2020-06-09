@@ -94,12 +94,12 @@
                                           :dev? (rf/subscribe [:dev?])}) ; Seems not reactive if I destructure here
 
                      
-                     css-current-session (reagent/atom "invisible")
+                     css-current-session-text (reagent/atom "invisible")
                      css-next-timer (reagent/atom "invisible")
                      
-                     animate-css-fade-fn (fn [css-atom]
+                     animate-css-fade-fn (fn [css-atom length]
                                              (reset! css-atom "animate__fadeIn")
-                                             (js/setTimeout (fn [] (reset! css-atom "animate__fadeOut")) 1200)
+                                             (js/setTimeout (fn [] (reset! css-atom "animate__fadeOut")) length)
                                              )
                      
                      timer-id (reagent/atom nil) ;setInterval id
@@ -123,7 +123,8 @@
                                                  ; Set start to 0, end to break (default is 5). Working out difference in minute of what user inserted
                                                    (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))
                                                    (swap! state assoc-in [:end] (date-fns/addMinutes (.now js/Date)
-                                                                                                     (date-fns/differenceInMinutes (get-in @state [:value-next-end]) (get-in @state [:value-next-start]))))))
+                                                                                                     (date-fns/differenceInMinutes (get-in @state [:value-next-end]) (get-in @state [:value-next-start]))))
+                                                   (animate-css-fade-fn css-current-session-text 3000)))
                                                 
                                                 ((fn []
                                                    ; Case finished session
@@ -133,9 +134,9 @@
 
                                                  ; Set start to 0, end to break (default is 5). Working out difference in minute of what user inserted
                                                    (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))
-                                                   (swap! state assoc-in [:end] (date-fns/addMinutes (.now js/Date) 
+                                                   (swap! state assoc-in [:end] (date-fns/addMinutes (.now js/Date)
                                                                                                      (date-fns/differenceInMinutes (get-in @state [:value-break-end]) (get-in @state [:value-break-start]))))
-                                                   ))))
+                                                   (animate-css-fade-fn css-current-session-text 3000)))))
                                             )
                                           70))
 
@@ -207,22 +208,23 @@
           running? (get-in @state [:running?])
           finished? (get-in @state [:finished?])
           break? (get-in @state [:break?])
-          
+
           ; Logic of which component duration to show. 
           display-compound-duration (reagent/atom (cond
                                                     clean? next-compound-duration-plus-ms
                                                     running? compound-duration-plus-ms
                                                     finished? {:h 0 :m 0 :s 0 :ms 0} ; Now this doesn't need to be hard coded and actual calculation should give same. Also interval should stop and not countdown below
                                                     :else compound-duration-plus-ms #_{:h 1 :m 2 :s 3 :ms 4}))
-                                                    
+
           ;; display-compound-duration (cond
           ;;                             clean? next-compound-duration-plus-ms
           ;;                             running? compound-duration-plus-ms
           ;;                             finished? {:h 0 :m 0 :s 0 :ms 0} ; Now this doesn't need to be hard coded and actual calculation should give same. Also interval should stop and not countdown below
           ;;                             :else compound-duration-plus-ms #_{:h 1 :m 2 :s 3 :ms 4})
-          
+
+          ; For clicking logic. Sometimes click should trigger, sometimes not.
           next-timer-animate-fn-logic (if (or running? finished? (not clean?))
-                                        (fn [] (animate-css-fade-fn css-next-timer))
+                                        (fn [] (animate-css-fade-fn css-next-timer 1200))
                                         (fn [] nil))
           ]
       [:div.flex.flex-col.items-center.justify-center.content-center.self-center
@@ -230,11 +232,11 @@
        [:div.opacity-50.centered.animate__animated.animate__faster {:class @css-next-timer}  ; invisible as default stays in DOM if this converts into flex box.
         ;; [clock/digital-clean {:compound-duration {:h 0 :m next-pomo-length :s 0 :ms 0}}]
         [clock/digital-clean {:compound-duration {:m next-pomo-length}}]]
-       [:div.opacity-50.centered.animate__animated {:class @css-current-session}
+       [:div.opacity-50.centered.text-3xl.text-gray-700.animate__animated {:class @css-current-session-text}
         [:div#timer-label.btn (if break? "Break" "Session")]]
-       [:div.flex.flex-col.items-center.hidden
-        [:div#timer-label.btn (if break? "Break" "Session")] ; HIDDEN. Here for freeCodeCamp Requirement
-        [:div#session-length.btn (humanize-double-digit (:m next-compound-duration-plus-ms)) #_":" #_(humanize-double-digit (:s next-compound-duration-plus-ms))] ; TODO: Get value from state     HIDDEN. Here for freeCodeCamp Requirement
+       [:div.flex.flex-col.items-center.hidden ; HIDDEN. Here for freeCodeCamp Requirement
+        [:div#timer-label.btn (if break? "Break" "Session")] 
+        [:div#session-length.btn (humanize-double-digit (:m next-compound-duration-plus-ms)) #_":" #_(humanize-double-digit (:s next-compound-duration-plus-ms))] ; HIDDEN. Here for freeCodeCamp Requirement
         [:div#time-left.btn (humanize-double-digit (:m @display-compound-duration)) ":" (humanize-double-digit (:s @display-compound-duration))] ; HIDDEN. Here for freeCodeCamp Requirement. User Story #8 25:00 (mm:ss format)
         ]
        [:div {:data-tip "Break Length"}
@@ -268,10 +270,13 @@
          (merge {:on-click (fn []
                              (swap! state update-in [:value-next-end] (fn [v] (date-fns/subMinutes v 1)))
                              (next-timer-animate-fn-logic))}
-                (when (<= next-pomo-length 0) btn-invalid))
+                (when (<= next-pomo-length 1) btn-invalid))
          "-"]
         [:div.flex.flex-row.text-6xl.tracking-wide.leading-none.text-teal-500.text-opacity-100.cursor-pointer.select-none.mx-12
-         {:on-click #(swap! state update-in [:ms-visible?] not)}
+         {:on-click (fn [] 
+                      (swap! state update-in [:ms-visible?] not)
+                      (animate-css-fade-fn css-current-session-text 1200)
+                      )}
          [clock/digital-clean {:compound-duration @display-compound-duration
                               ;;  :compound-duration display-compound-duration
                                :ms-placement (get-in @state [:ms-placement])
