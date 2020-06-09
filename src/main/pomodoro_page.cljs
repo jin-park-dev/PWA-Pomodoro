@@ -36,6 +36,7 @@
           compound-duration-filtered (dissoc compound-duration-all :w :d)
           ms (when (get-in @state [:start?]) (mod (date-fns/differenceInMilliseconds (get-in @state [:end]) (get-in @state [:start])) 1000))
           compound-duration-plus-ms (assoc compound-duration-filtered :ms ms)
+          ; compound-duration contains logic for what shows up inside of main timer.
           compound-duration (cond
                               (get-in @state [:finished?]) {:h 0 :m 0 :s 0 :ms 0}
                               (get-in @state [:start?]) compound-duration-plus-ms
@@ -76,7 +77,8 @@
 
                                           :clean? true ; Inital state of running not have happened at all. E.g user interaction Clean
                                           :running? false ; Timer running or not running
-                                          :finished? false ; Timer has finished (Reached 0)
+                                          :finished? false ; Timer has finished (Reached 0). 
+                                          :break? false; Tracking break
 
                                           ;; for calculating break length. Due to lack of duration concept and being able to use, it needs to be stored this way
                                           :value-break-start (.now js/Date) ; Doesn't mutate in length calc logic (although logic can, my design I only modify end.)
@@ -101,11 +103,39 @@
                      
                      timer-id (reagent/atom nil) ;setInterval id
 
+                     ; for freeCodeCamp requirement.
+                     ; This is keep going, depending on state do one or another.
                      timer-fn (fn [] (js/setInterval
                                           (fn []
+                                            ; Start will always be now. This will cause end - start calculation to change hence countdown (or countup). Based on this change calculation and conditions of app
+                                            ; it will cause app to react
                                             (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))
-                                            (when (= 0 (date-fns/differenceInSeconds (get-in @state [:end]) (get-in @state [:start])))
-                                              (swap! state assoc-in [:finished?] true)))
+                                            
+                                            ; When end-start = 0, trigger finished. This could be session or break. Sets next timer. This should only run when time is at 0.
+                                            (when (>= 0 (date-fns/differenceInSeconds (get-in @state [:end]) (get-in @state [:start])))
+                                              (if (get-in @state [:break?]) 
+                                                ((fn []
+                                                   ; Case break timer has reached zero. Need to setup system to star normal session timer.
+                                                   (swap! state assoc-in [:finished?] false)
+                                                   (swap! state assoc-in [:break?] false)
+
+                                                 ; Set start to 0, end to break (default is 5). Working out difference in minute of what user inserted
+                                                   (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))
+                                                   (swap! state assoc-in [:end] (date-fns/addMinutes (.now js/Date)
+                                                                                                     (date-fns/differenceInMinutes (get-in @state [:value-next-end]) (get-in @state [:value-next-start]))))))
+                                                
+                                                ((fn []
+                                                   ; Case finished session
+                                                   (swap! state assoc-in [:finished?] true)
+                                                   (swap! state assoc-in [:break?] true)
+
+
+                                                 ; Set start to 0, end to break (default is 5). Working out difference in minute of what user inserted
+                                                   (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))
+                                                   (swap! state assoc-in [:end] (date-fns/addMinutes (.now js/Date) 
+                                                                                                     (date-fns/differenceInMinutes (get-in @state [:value-break-end]) (get-in @state [:value-break-start]))))
+                                                   ))))
+                                            )
                                           70))
 
                      ; Resets 
@@ -115,6 +145,7 @@
                                   (swap! state assoc-in [:clean?] true)
                                   (swap! state assoc-in [:running?] false)
                                   (swap! state assoc-in [:finished?] false)
+                                  (swap! state assoc-in [:break?] false)
 
                                   (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))  ; This needs to be reset to now.
                                   ;; (swap! state assoc-in [:end] (date-fns/addMinutes (.now js/Date) next-pomo-length)) ;; My preferred logic. Insert this and remove freeCodeCamp Requirement below to revert back.
@@ -174,8 +205,9 @@
           clean? (get-in @state [:clean?])
           running? (get-in @state [:running?])
           finished? (get-in @state [:finished?])
+          break? (get-in @state [:break?])
+          
           ; Logic of which component duration to show. 
-                    
           display-compound-duration (reagent/atom (cond
                                                     clean? next-compound-duration-plus-ms
                                                     running? compound-duration-plus-ms
@@ -196,7 +228,7 @@
         ;; [clock/digital-clean {:compound-duration {:h 0 :m next-pomo-length :s 0 :ms 0}}]
         [clock/digital-clean {:compound-duration {:m next-pomo-length}}]]
        [:div.flex
-        [:div#timer-label.btn "Session"] ; HIDDEN. Here for freeCodeCamp Requirement
+        [:div#timer-label.btn (if break? "Break" "Session")] ; HIDDEN. Here for freeCodeCamp Requirement
         [:div#session-length.btn (humanize-double-digit (:m next-compound-duration-plus-ms)) #_":" #_(humanize-double-digit (:s next-compound-duration-plus-ms))] ; TODO: Get value from state     HIDDEN. Here for freeCodeCamp Requirement
         [:div#time-left.btn (humanize-double-digit (:m @display-compound-duration)) ":" (humanize-double-digit (:s @display-compound-duration))] ; HIDDEN. Here for freeCodeCamp Requirement. User Story #8 25:00 (mm:ss format)
         ]
