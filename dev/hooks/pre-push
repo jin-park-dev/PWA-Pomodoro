@@ -8,7 +8,7 @@ do
 		echo "Not enabled."
 
 	elif [ "master" == "$branch" ]; then
-		echo "master. Deplying to pomo.kanxdoro.com"
+		printf "\n Branch Master - Deplying to pomo.kanxdoro.com \n\n"
 	    curl -u jin:11cf2ecf36c8458239763fb4d6644110e8 https://jenkins.jinis.online/job/PWA-Pomodoro/build?token=aiwfeo8934tgoraeuhyaiweo-master
 	fi
 
