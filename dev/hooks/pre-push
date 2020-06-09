@@ -1,0 +1,17 @@
+#!/bin/sh
+
+while read oldrev newrev refname
+do
+    branch=$(git rev-parse --symbolic --abbrev-ref $refname)
+
+	if [ "staging/hello" == "$branch" ]; then
+		echo "Not enabled."
+
+	elif [ "master" == "$branch" ]; then
+		echo "master. Deplying to pomo.kanxdoro.com"
+	    curl -u jin:11cf2ecf36c8458239763fb4d6644110e8 https://jenkins.jinis.online/job/PWA-Pomodoro/build?token=aiwfeo8934tgoraeuhyaiweo-master
+	fi
+
+done
+
+exit 0
