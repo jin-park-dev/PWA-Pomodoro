@@ -37,8 +37,12 @@
 (defn humanize-double-digit
   "takes value and if it in single digit add, 0 in front.
   Only works for positive number.
-  Returns string"
+  ;; nil, it gets accepts in (< -1 number 10) due to javascript. Due to this additional check.
+  Returns string only to keep consistent unless nil."
   [number]
-  (if (< -1 number 10) ; 0-9 number only
-    (str "0" number)
-    (str number)))
+  (if (nil? number) ; nil is between -1 to 10 in javascript... o_O. Need additional check to not cast nil.
+    number
+    (if (< -1 number 10) ; 0-9 number only
+      (str "0" number)
+      (str number))
+    ))

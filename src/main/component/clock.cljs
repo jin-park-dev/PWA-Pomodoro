@@ -16,7 +16,9 @@
            ms-placement "bottom"
            ms-visible? false}}]
   (let [_compound-duration-filtered (dissoc compound-duration :ms)
-        _compound-duration (update _compound-duration-filtered :s humanize-double-digit)
+        _compound-duration (if (nil? (:s compound-duration))  ; If there is second, humanize it.
+                             _compound-duration-filtered
+                             (update _compound-duration-filtered :s humanize-double-digit))
         ms (:ms compound-duration 0)
         _ms-placement (when ms-visible? ms-placement)]
     [:div.flex.flex-col.items-center.justify-center.content-center.self-center

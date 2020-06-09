@@ -114,8 +114,23 @@
                                   (swap! state assoc-in [:clean?] true)
                                   (swap! state assoc-in [:running?] false)
                                   (swap! state assoc-in [:finished?] false)
-                                  (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))
-                                  (swap! state assoc-in [:end] (date-fns/addMinutes (.now js/Date) next-pomo-length))))
+
+                                  (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))  ; This needs to be reset to now.
+                                  ;; (swap! state assoc-in [:end] (date-fns/addMinutes (.now js/Date) next-pomo-length)) ;; My preferred logic. Insert this and remove freeCodeCamp Requirement below to revert back.
+
+                                  ;;;;;;;;;;;
+                                  ;; freeCodeCamp Requirement (temp  This logic is overriding my architecture "next-pomo-length")
+
+
+                                  ; Reset pomodoro length timer
+                                  (swap! state assoc-in [:value-next-start] (date-fns/addMinutes (.now js/Date) 0))  ; reset next timer to now. This logic is overriding my architecture "next-pomo-length"
+                                  (swap! state assoc-in [:value-next-end] (date-fns/addMinutes (.now js/Date) 25))  ; reset next timer to 25 minutes This logic is overriding my architecture "next-pomo-length"
+                                  (swap! state assoc-in [:end] (date-fns/addMinutes (.now js/Date) 25))  ; reset (force) next time to be 25 minutes. This logic is overriding my architecture "next-pomo-length"
+                                  ;;;;;;;;;;;
+
+                                  ; Reset break timer.
+                                  (swap! state assoc-in [:value-next-start] (date-fns/addMinutes (.now js/Date) 0))
+                                  (swap! state assoc-in [:value-break-end] (date-fns/addMinutes (.now js/Date) 5))))
 
                     ;;  Initial Start
                      fn-start (fn [e]
@@ -177,15 +192,17 @@
       [:div.flex.flex-col.items-center.justify-center.content-center.self-center
        ; Using centered allows this to stay mostly middle with temporary coming in and out. Possible for mobile this needs media query. Visible
        [:div.opacity-50.centered.animate__animated.animate__faster {:class @next-timer-animate}  ; invisible as default stays in DOM if this converts into flex box.
-        [clock/digital-clean {:compound-duration {:h 0 :m next-pomo-length :s 0 :ms 0}}]]
+        ;; [clock/digital-clean {:compound-duration {:h 0 :m next-pomo-length :s 0 :ms 0}}]
+        [clock/digital-clean {:compound-duration {:m next-pomo-length}}]]
        [:div.flex
-        [:div#timer-label.btn.hidden "Session"] ; HIDDEN. Here for freeCodeCamp Requirement
-        [:div#session-length.btn.hidden "25"] ; TODO: Get value from state     HIDDEN. Here for freeCodeCamp Requirement
-        [:div#time-left.btn.hidden (humanize-double-digit (:m @display-compound-duration)) ":" (humanize-double-digit (:s @display-compound-duration))] ; HIDDEN. Here for freeCodeCamp Requirement. User Story #8 25:00 (mm:ss format)
+        [:div#timer-label.btn "Session"] ; HIDDEN. Here for freeCodeCamp Requirement
+        [:div#session-length.btn (humanize-double-digit (:m next-compound-duration-plus-ms)) #_":" #_(humanize-double-digit (:s next-compound-duration-plus-ms))] ; TODO: Get value from state     HIDDEN. Here for freeCodeCamp Requirement
+        [:div#time-left.btn (humanize-double-digit (:m @display-compound-duration)) ":" (humanize-double-digit (:s @display-compound-duration))] ; HIDDEN. Here for freeCodeCamp Requirement. User Story #8 25:00 (mm:ss format)
         ]
        [:div {:data-tip "Break Length"}
         [input/number {:value break-length
                        :class "transition-25to100 mb-10"
+                       :id-value "break-length"
                        :id-button "break-decrement"  ; freeCodeCamp Requirement
                        :id+button "break-increment"  ; freeCodeCamp Requirement
                        :handle-change (fn [] (swap! state update-in [:value-break-end] (fn [v] (date-fns/subMinutes v 1))))

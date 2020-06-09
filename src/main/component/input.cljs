@@ -9,8 +9,9 @@
   "Number with button to increase, decrease
    validation to enable, disable.
    "
-  [{:keys [value id-button id+button handle-change handle+change class validation-button validation+button]
+  [{:keys [value id-value id-button id+button handle-change handle+change class validation-button validation+button]
     :or   {value 0  ; default if no number
+           id-value nil
            id-button nil
            id+button nil
            handle-change (fn [] (js/console.log "handle-change pressed. Please add function"))
@@ -28,7 +29,7 @@
     [:div.flex.flex-row {:class class}
      [:button.btn.btn-nav (merge {:id id-button} on-click)
       "-"]
-     [:div#break-length.btn.btn-nav.clean-number-input.cursor-default.mx-4 value]
+     [:div.btn.btn-nav.clean-number-input.cursor-default.mx-4 {:id id-value} value]
      [:button.btn.btn-nav (merge {:id id+button} on+click)
       "+"]]))
 
