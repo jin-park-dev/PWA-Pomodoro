@@ -1,9 +1,8 @@
 (ns component.input
   (:require [reagent.core :as reagent]
             [stylefy.core :as stylefy :refer [use-style]]
-            ))
+            [component.style :refer [btn-invalid]]))
 
-(def btn-invalid {:disabled true :class "cursor-not-allowed"})
 
 (defn number
   "Number with button to increase, decrease

@@ -9,7 +9,8 @@
    [util.time :refer [seconds->duration diff-in-duration humanize-double-digit]]
    [util.dev :refer [dev-panel]]
    [component.clock :as clock]
-   [component.input :as input]))
+   [component.input :as input]
+   [component.style :refer [btn-invalid]]))
 
 
 (defn pomodoro-simple []
@@ -227,9 +228,10 @@
 
        [:div.flex.flex-row
         [:button#session-decrement.btn.btn-nav.rounded-l-full.rounded-r.self-center.transition-25to100
-         {:on-click (fn [] 
-                      (swap! state update-in [:value-next-end] (fn [v] (date-fns/subMinutes v 1)))
-                      (next-timer-animate-fn-logic))}
+         (merge {:on-click (fn []
+                             (swap! state update-in [:value-next-end] (fn [v] (date-fns/subMinutes v 1)))
+                             (next-timer-animate-fn-logic))}
+                (when (<= next-pomo-length 0) btn-invalid))
          "-"]
         [:div.flex.flex-row.text-6xl.tracking-wide.leading-none.text-teal-500.text-opacity-100.cursor-pointer.select-none.mx-12
          {:on-click #(swap! state update-in [:ms-visible?] not)}
@@ -239,9 +241,10 @@
                                :ms-visible? (get-in @state [:ms-visible?])}]
          #_[:div.text-base.tracking-wide.leading-none.text-teal-500.text-opacity-100.mt-2 ms]]
         [:button#session-increment.btn.btn-nav.rounded-r-full.rounded-l.self-center.transition-25to100
-         {:on-click (fn []
-                      (swap! state update-in [:value-next-end] (fn [v] (date-fns/addMinutes v 1)))
-                      (next-timer-animate-fn-logic))}
+         (merge {:on-click (fn []
+                       (swap! state update-in [:value-next-end] (fn [v] (date-fns/addMinutes v 1)))
+                       (next-timer-animate-fn-logic))}
+                (when (>= next-pomo-length 59) btn-invalid))  ; freeCodeCamp Requirement
          "+"]]
        (when (get-in @state [:ms?]) [:div.text-base.tracking-wide.leading-none.text-teal-500.text-opacity-100.mt-2 ms])
        [:div.flex.flex-row.mt-10.text-xl.transition-25to100.opacity-50
