@@ -172,7 +172,7 @@
           ;;                             finished? {:h 0 :m 0 :s 0 :ms 0} ; Now this doesn't need to be hard coded and actual calculation should give same. Also interval should stop and not countdown below
           ;;                             :else compound-duration-plus-ms #_{:h 1 :m 2 :s 3 :ms 4})
           
-          next-timer-animate-fn-logic (when (or running? finished?) next-timer-animate-fn)
+          next-timer-animate-fn-logic (if (or running? finished? (not clean?)) next-timer-animate-fn (fn [] nil))
           ]
       [:div.flex.flex-col.items-center.justify-center.content-center.self-center
        ; Using centered allows this to stay mostly middle with temporary coming in and out. Possible for mobile this needs media query. Visible
