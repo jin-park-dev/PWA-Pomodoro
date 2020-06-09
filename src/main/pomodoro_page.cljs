@@ -6,7 +6,7 @@
    [stylefy.core :as stylefy :refer [use-style]]
    [date-fns :as date-fns]
    ["react-tooltip" :as ReactTooltip]
-   [util.time :refer [seconds->duration diff-in-duration]]
+   [util.time :refer [seconds->duration diff-in-duration humanize-double-digit]]
    [util.dev :refer [dev-panel]]
    [component.clock :as clock]
    [component.input :as input]))
@@ -181,11 +181,13 @@
        [:div.flex
         [:div#timer-label.btn.hidden "Session"] ; HIDDEN. Here for freeCodeCamp Requirement
         [:div#session-length.btn.hidden "25"] ; TODO: Get value from state     HIDDEN. Here for freeCodeCamp Requirement
-        [:div#time-left.btn.hidden "25:00 (mm:ss format)"] ; TODO: Get value from state     HIDDEN. Here for freeCodeCamp Requirement
+        [:div#time-left.btn.hidden (humanize-double-digit (:m @display-compound-duration)) ":" (humanize-double-digit (:s @display-compound-duration))] ; HIDDEN. Here for freeCodeCamp Requirement. User Story #8 25:00 (mm:ss format)
         ]
        [:div {:data-tip "Break Length"}
         [input/number {:value break-length
                        :class "transition-25to100 mb-10"
+                       :id-button "break-decrement"  ; freeCodeCamp Requirement
+                       :id+button "break-increment"  ; freeCodeCamp Requirement
                        :handle-change (fn [] (swap! state update-in [:value-break-end] (fn [v] (date-fns/subMinutes v 1))))
                        :handle+change (fn [] (swap! state update-in [:value-break-end] (fn [v] (date-fns/addMinutes v 1))))
                        :validation-button (<= break-length 0) ; When 0 or smaller don't let value get smaller.

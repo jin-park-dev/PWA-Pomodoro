@@ -9,24 +9,27 @@
   "Number with button to increase, decrease
    validation to enable, disable.
    "
-  [{:keys [value handle-change handle+change class validation-button validation+button]
+  [{:keys [value id-button id+button handle-change handle+change class validation-button validation+button]
     :or   {value 0  ; default if no number
+           id-button nil
+           id+button nil
            handle-change (fn [] (js/console.log "handle-change pressed. Please add function"))
            handle+change (fn [] (js/console.log "handle+change pressed. Please add function"))
            class nil
-           validation-button false  ; true if there is issue
-           validation+button false
+           validation-button false  ; true if there is issue. Triggers button to be unclickable
+           validation+button false  ; false when there is no issue.
            }}]
-  (let []
+  (let [on-click (if validation-button
+                   (merge {:on-click handle-change} btn-invalid)
+                   {:on-click handle-change})
+        on+click (if validation+button
+                   (merge {:on-click handle-change} btn-invalid)
+                   {:on-click handle+change})]
     [:div.flex.flex-row {:class class}
-     [:button#break-decrement.btn.btn-nav (if validation-button
-                                            (merge {:on-click handle-change} btn-invalid)
-                                            {:on-click handle-change})
+     [:button.btn.btn-nav (merge {:id id-button} on-click)
       "-"]
      [:div#break-length.btn.btn-nav.clean-number-input.cursor-default.mx-4 value]
-     [:button#break-increment.btn.btn-nav (if validation+button
-                                            (merge {:on-click handle-change} btn-invalid)
-                                            {:on-click handle+change})
+     [:button.btn.btn-nav (merge {:id id+button} on+click)
       "+"]]))
 
 
