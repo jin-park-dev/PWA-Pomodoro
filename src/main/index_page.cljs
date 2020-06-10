@@ -42,12 +42,12 @@
                        (reagent/atom nil)  ; ;or empty string better? ""
                        )]
     (fn []
-      ;; (fn-animate-css css-h1-intro "animate__flipInX" nil 5000)
       [:div.flex-center.h-full
        [:h1.cursor-pointer.select-none.animate__animated {:class @css-h1-intro
                                                           :on-click (fn [] (fn-animate-css css-h1-intro "animate__flipInX" nil 1200))}
-        "Welcome to PWAdoro"]
+        "Welcome to PWA-Pomo"]
        [:p "Simple no nonsense Pomodoro Timer"]
+       [:p "Powered by Progressive Web App"]
        (when @(rf/subscribe [:dev?]) [dev-panel [css-h1-intro]])])))
 
 (defn index-page-container []

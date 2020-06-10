@@ -99,6 +99,9 @@
                                               (.play ref)
                                               (.pause ref))))
                      
+                     fn-pause-alarm (fn [] (when-let [ref @alarm-ref] ;; not nil?
+                                            (.load ref)))
+                     
                      ;; CSS
                      css-current-session-text (reagent/atom "invisible")
                      css-next-timer (reagent/atom "invisible")
@@ -123,7 +126,7 @@
                                                    ; Case break timer has reached zero. Need to setup system to star normal session timer.
                                                (swap! state assoc-in [:finished?] false)
                                                (swap! state assoc-in [:break?] false)
-                                               (fn-play-alarm)  ; freeCodecamp Requirement
+                                               (fn-play-alarm)  ; freeCodecamp Requirement. Design decision. I want to trigger this through finished?. However I'll have to convert this to form-3 and sort after html has mounted. This is easier to do without converting.
 
                                                  ; Set start to 0, end to break (default is 5). Working out difference in minute of what user inserted
                                                (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))
@@ -168,7 +171,10 @@
 
                                   ; Reset break timer.
                                   (swap! state assoc-in [:value-break-start] (date-fns/addMinutes (.now js/Date) 0))
-                                  (swap! state assoc-in [:value-break-end] (date-fns/addMinutes (.now js/Date) 5))))
+                                  (swap! state assoc-in [:value-break-end] (date-fns/addMinutes (.now js/Date) 5))
+                                  
+                                  ; Rewind 'Load' alarm
+                                  (fn-pause-alarm)))
 
                     ;;  Initial Start
                      fn-start (fn [e]
