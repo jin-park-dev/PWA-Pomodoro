@@ -6,7 +6,6 @@
    [stylefy.core :as stylefy :refer [use-style]]
    [date-fns :as date-fns]
    ["react-tooltip" :as ReactTooltip]
-   ["react-audio-player" :default ReactAudioPlayer]
    [util.time :refer [seconds->duration diff-in-duration humanize-double-digit]]
    [util.dev :refer [dev-panel]]
    [component.clock :as clock]
@@ -69,7 +68,8 @@
 ; date-fns unlike moments does not have duration I can use. I have to caclculate time to get any duration
 ; This mut be done since js interval are not safe and will go out of sync
 (defn pomodoro-simple--options []
-  (reagent/with-let [state (reagent/atom {; This will mutate to keep track of the time.
+  (reagent/with-let [alarm-ref (reagent/atom nil)
+                     state (reagent/atom {; This will mutate to keep track of the time.
                                           :start (date-fns/addMinutes (.now js/Date) 0)
                                           :end (date-fns/addMinutes (.now js/Date) 25)
 
@@ -94,7 +94,12 @@
 
                                           :dev? (rf/subscribe [:dev?])}) ; Seems not reactive if I destructure here
 
-
+                     fn-play-alarm (fn [] (when-let [ref @alarm-ref] ;; not nil?
+                                            (if (.-paused ref)
+                                              (.play ref)
+                                              (.pause ref))))
+                     
+                     ;; CSS
                      css-current-session-text (reagent/atom "invisible")
                      css-next-timer (reagent/atom "invisible")
 
@@ -118,6 +123,7 @@
                                                    ; Case break timer has reached zero. Need to setup system to star normal session timer.
                                                (swap! state assoc-in [:finished?] false)
                                                (swap! state assoc-in [:break?] false)
+                                               (fn-play-alarm)  ; freeCodecamp Requirement
 
                                                  ; Set start to 0, end to break (default is 5). Working out difference in minute of what user inserted
                                                (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))
@@ -129,7 +135,7 @@
                                                    ; Case finished session
                                                (swap! state assoc-in [:finished?] true)
                                                (swap! state assoc-in [:break?] true)
-
+                                               (fn-play-alarm)
 
                                                  ; Set start to 0, end to break (default is 5). Working out difference in minute of what user inserted
                                                (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))
@@ -287,8 +293,7 @@
          "+"]]
        (when (get-in @state [:ms?]) [:div.text-base.tracking-wide.leading-none.text-teal-500.text-opacity-100.mt-2 ms])
        [:div.flex.flex-row.mt-10.text-xl.transition-25to100.opacity-50
-        [:button#reset.btn.btn-nav.mr-8 {:on-click (fn [e] (fn-reset e))}
-         "Reset"]
+        [:button#reset.btn.btn-nav.mr-8 {:on-click (fn [e] (fn-reset e))} "Reset"]
         [:button#start_stop.btn.btn-nav {:on-click (fn [e] (if clean?
                                                              (fn-start e)
                                                              (if running? (fn-pause e) (fn-resume e))))
@@ -300,18 +305,12 @@
        #_[:button.btn.btn-nav.mt-2 {:on-click (fn [e]
                                                 (rf/dispatch [:dev/dev-switch]))}
           "dev: " (pr-str @(rf/subscribe [:dev?]))]
-       #_[:audio {:id "beep"
-                  :preload "auto"
-                  :src "https://raw.githubusercontent.com/freeCodeCamp/cdn/master/build/testable-projects-fcc/audio/BeepSound.wav"
-                  :controls false}]
-       [:> ReactAudioPlayer {
-                             :id "beep"
-                             :preload "auto"
-                             :src "https://raw.githubusercontent.com/freeCodeCamp/cdn/master/build/testable-projects-fcc/audio/BeepSound.wav"
-                             :controls false
-                             :onCanPlay (fn [] true)
-                             }]
-       (when @(get-in @state [:dev?]) [dev-panel [state timer-id]])])
+       [:audio {:ref (fn [e] (reset! alarm-ref e))
+                :id "beep"
+                :preload "auto"
+                :src "https://raw.githubusercontent.com/freeCodeCamp/cdn/master/build/testable-projects-fcc/audio/BeepSound.wav"
+                :controls false}]
+       (when @(get-in @state [:dev?]) [dev-panel [state timer-id alarm-ref]])])
     (finally (js/clearInterval timer-id))))
 
 (defn pomodoro-panel-nav []

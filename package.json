@@ -12,7 +12,6 @@
   "dependencies": {
     "date-fns": "^2.14.0",
     "react": "^16.13.0",
-    "react-audio-player": "^0.13.0",
     "react-dom": "16.13.0",
     "react-router-dom": "^5.2.0",
     "react-tooltip": "^4.2.6"
