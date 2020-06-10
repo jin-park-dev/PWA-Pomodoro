@@ -8,7 +8,10 @@
                                          :dev-panel? true}})
 
 (def default-user-settings {:dev {:dev? false}
-                            :ui {:clock {:nav "simple"}
+                            :ui {:index {:initial? true  ; First time user is on site (for this session?)
+                                         :last-seen nil
+                                         }
+                                 :clock {:nav "simple"}
                                  :timer {:nav "simple"}
                                  :pomodoro {:nav "simple"}  ; simple(clean) simple-options(adv) advanced?
                                  }})

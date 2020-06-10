@@ -6,11 +6,12 @@
    [stylefy.core :as stylefy :refer [use-style]]
    [date-fns :as date-fns]
    ["react-tooltip" :as ReactTooltip]
+   ["react-audio-player" :default ReactAudioPlayer]
    [util.time :refer [seconds->duration diff-in-duration humanize-double-digit]]
    [util.dev :refer [dev-panel]]
    [component.clock :as clock]
    [component.input :as input]
-   [component.style :refer [btn-invalid]]))
+   [component.style :refer [btn-invalid fn-animate-css]]))
 
 
 (defn pomodoro-simple []
@@ -93,52 +94,49 @@
 
                                           :dev? (rf/subscribe [:dev?])}) ; Seems not reactive if I destructure here
 
-                     
+
                      css-current-session-text (reagent/atom "invisible")
                      css-next-timer (reagent/atom "invisible")
-                     
-                     animate-css-fade-fn (fn [css-atom length]
-                                             (reset! css-atom "animate__fadeIn")
-                                             (js/setTimeout (fn [] (reset! css-atom "animate__fadeOut")) length)
-                                             )
-                     
+
+                     ; With animation baked in
+                     animate-css-fade-fn (fn [css-atom length] (fn-animate-css css-atom "animate__fadeIn" "animate__fadeOut" length))
+
                      timer-id (reagent/atom nil) ;setInterval id
 
                      ; for freeCodeCamp requirement.
                      ; This is keep going, depending on state do one or another.
                      timer-fn (fn [] (js/setInterval
-                                          (fn []
+                                      (fn []
                                             ; Start will always be now. This will cause end - start calculation to change hence countdown (or countup). Based on this change calculation and conditions of app
                                             ; it will cause app to react
-                                            (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))
-                                            
+                                        (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))
+
                                             ; When end-start = 0, trigger finished. This could be session or break. Sets next timer. This should only run when time is at 0.
-                                            (when (>= 0 (date-fns/differenceInSeconds (get-in @state [:end]) (get-in @state [:start])))
-                                              (if (get-in @state [:break?]) 
-                                                ((fn []
+                                        (when (>= 0 (date-fns/differenceInSeconds (get-in @state [:end]) (get-in @state [:start])))
+                                          (if (get-in @state [:break?])
+                                            ((fn []
                                                    ; Case break timer has reached zero. Need to setup system to star normal session timer.
-                                                   (swap! state assoc-in [:finished?] false)
-                                                   (swap! state assoc-in [:break?] false)
+                                               (swap! state assoc-in [:finished?] false)
+                                               (swap! state assoc-in [:break?] false)
 
                                                  ; Set start to 0, end to break (default is 5). Working out difference in minute of what user inserted
-                                                   (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))
-                                                   (swap! state assoc-in [:end] (date-fns/addMinutes (.now js/Date)
-                                                                                                     (date-fns/differenceInMinutes (get-in @state [:value-next-end]) (get-in @state [:value-next-start]))))
-                                                   (animate-css-fade-fn css-current-session-text 3000)))
-                                                
-                                                ((fn []
+                                               (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))
+                                               (swap! state assoc-in [:end] (date-fns/addMinutes (.now js/Date)
+                                                                                                 (date-fns/differenceInMinutes (get-in @state [:value-next-end]) (get-in @state [:value-next-start]))))
+                                               (animate-css-fade-fn css-current-session-text 3000)))
+
+                                            ((fn []
                                                    ; Case finished session
-                                                   (swap! state assoc-in [:finished?] true)
-                                                   (swap! state assoc-in [:break?] true)
+                                               (swap! state assoc-in [:finished?] true)
+                                               (swap! state assoc-in [:break?] true)
 
 
                                                  ; Set start to 0, end to break (default is 5). Working out difference in minute of what user inserted
-                                                   (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))
-                                                   (swap! state assoc-in [:end] (date-fns/addMinutes (.now js/Date)
-                                                                                                     (date-fns/differenceInMinutes (get-in @state [:value-break-end]) (get-in @state [:value-break-start]))))
-                                                   (animate-css-fade-fn css-current-session-text 3000)))))
-                                            )
-                                          70))
+                                               (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))
+                                               (swap! state assoc-in [:end] (date-fns/addMinutes (.now js/Date)
+                                                                                                 (date-fns/differenceInMinutes (get-in @state [:value-break-end]) (get-in @state [:value-break-start]))))
+                                               (animate-css-fade-fn css-current-session-text 3000))))))
+                                      70))
 
                      ; Resets 
                      fn-reset (fn [e]
@@ -235,7 +233,7 @@
        [:div.opacity-50.centered.text-3xl.text-gray-700.animate__animated {:class @css-current-session-text}
         [:div#timer-label.btn (if break? "Break" "Session")]]
        [:div.flex.flex-col.items-center.hidden ; HIDDEN. Here for freeCodeCamp Requirement
-        [:div#timer-label.btn (if break? "Break" "Session")] 
+        [:div#timer-label.btn (if break? "Break" "Session")]
         [:div#session-length.btn (humanize-double-digit (:m next-compound-duration-plus-ms)) #_":" #_(humanize-double-digit (:s next-compound-duration-plus-ms))] ; HIDDEN. Here for freeCodeCamp Requirement
         [:div#time-left.btn (humanize-double-digit (:m @display-compound-duration)) ":" (humanize-double-digit (:s @display-compound-duration))] ; HIDDEN. Here for freeCodeCamp Requirement. User Story #8 25:00 (mm:ss format)
         ]
@@ -273,10 +271,9 @@
                 (when (<= next-pomo-length 1) btn-invalid))
          "-"]
         [:div.flex.flex-row.text-6xl.tracking-wide.leading-none.text-teal-500.text-opacity-100.cursor-pointer.select-none.mx-12
-         {:on-click (fn [] 
+         {:on-click (fn []
                       (swap! state update-in [:ms-visible?] not)
-                      (animate-css-fade-fn css-current-session-text 1200)
-                      )}
+                      (animate-css-fade-fn css-current-session-text 1200))}
          [clock/digital-clean {:compound-duration @display-compound-duration
                               ;;  :compound-duration display-compound-duration
                                :ms-placement (get-in @state [:ms-placement])
@@ -303,6 +300,17 @@
        #_[:button.btn.btn-nav.mt-2 {:on-click (fn [e]
                                                 (rf/dispatch [:dev/dev-switch]))}
           "dev: " (pr-str @(rf/subscribe [:dev?]))]
+       #_[:audio {:id "beep"
+                  :preload "auto"
+                  :src "https://raw.githubusercontent.com/freeCodeCamp/cdn/master/build/testable-projects-fcc/audio/BeepSound.wav"
+                  :controls false}]
+       [:> ReactAudioPlayer {
+                             :id "beep"
+                             :preload "auto"
+                             :src "https://raw.githubusercontent.com/freeCodeCamp/cdn/master/build/testable-projects-fcc/audio/BeepSound.wav"
+                             :controls false
+                             :onCanPlay (fn [] true)
+                             }]
        (when @(get-in @state [:dev?]) [dev-panel [state timer-id]])])
     (finally (js/clearInterval timer-id))))
 
