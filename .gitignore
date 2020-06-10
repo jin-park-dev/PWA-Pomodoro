@@ -27,3 +27,5 @@ javacore.*.dmp
 jitdump.*.dmp
 
 report.html
+
+build/*

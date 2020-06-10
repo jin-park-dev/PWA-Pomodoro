@@ -20,13 +20,15 @@
   },
   "scripts": {
     "start": "concurrently \"npm:watch*\" ",
-    "build": "npm run build:css && npm run build:shadow",
+    "build": "npm run build:shadow && npm run build:pwa && npm run build:css",
+    "build:copy": "copyfiles -u 1 public/css/main_style.css public/index.html public/js/* build",
+    "build:pwa": "npm run build:copy && workbox injectManifest workbox-config.js",
     "report": "npm run report:shadow",
     "report:shadow": "shadow-cljs run shadow.cljs.build-report app report.html",
     "watch:shadow": "shadow-cljs watch app",
     "old-watch:shadow-old": "shadow-cljs -d cider/piggieback:0.4.2 -d cider/cider-nrepl:0.24.0 watch app",
     "build:shadow": "shadow-cljs release app",
-    "build:css": "postcss src/assets/tailwind_config.css --output public/css/tailwind.css",
+    "build:css": "postcss src/assets/tailwind_config.css --output build/css/tailwind.css",
     "watch:css": "postcss src/assets/tailwind_config.css --output public/css/tailwind.css --watch",
     "legacy:start": "npm run watch:css & npm run watch:shadow"
   }
