@@ -6,6 +6,7 @@
     "autoprefixer": "^9.8.0",
     "concurrently": "^5.2.0",
     "copyfiles": "^2.3.0",
+    "express": "^4.17.1",
     "postcss-cli": "^7.1.1",
     "shadow-cljs": "2.9.10",
     "tailwindcss": "^1.4.6",
@@ -30,6 +31,7 @@
     "build:shadow": "shadow-cljs release app",
     "build:css": "postcss src/assets/tailwind_config.css --output build/css/tailwind.css",
     "watch:css": "postcss src/assets/tailwind_config.css --output public/css/tailwind.css --watch",
-    "legacy:start": "npm run watch:css & npm run watch:shadow"
+    "legacy:start": "npm run watch:css & npm run watch:shadow",
+    "serv:build": "node server.js"
   }
 }
