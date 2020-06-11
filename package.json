@@ -20,7 +20,7 @@
     "react-tooltip": "^4.2.6"
   },
   "scripts": {
-    "start": "concurrently \"npm:watch*\" ",
+    "start": "npm run clean:dev && concurrently \"npm:watch*\" ",
     "build": "npm run clean && npm run build:shadow && npm run build:css && npm run build:pwa",
     "clean": "npm run clean:build && npm run clean:dev",
     "build:copy": "copyfiles -u 1 public/css/main_style.css public/index.html public/js/* build",
