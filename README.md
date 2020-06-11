@@ -163,6 +163,7 @@ Give examples
 ### Installing
 
 This will get the app running on locally on http://localhost:9105
+(May need to add in ~/.shadow-cljs cider-nrepl as dependency)
 
 ```
 $ npm install
