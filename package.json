@@ -32,6 +32,7 @@
     "build:css": "postcss src/assets/tailwind_config.css --output build/css/tailwind.css",
     "watch:css": "postcss src/assets/tailwind_config.css --output public/css/tailwind.css --watch",
     "legacy:start": "npm run watch:css & npm run watch:shadow",
-    "serv:build": "node server.js"
+    "serv:build": "node server.js",
+    "serv:dev": "node server_dev.js"
   }
 }
