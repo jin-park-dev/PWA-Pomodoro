@@ -34,7 +34,7 @@
     "watch:css": "postcss src/assets/tailwind_config.css --output public/css/tailwind.css --watch",
     "clean:dev": "rm -rf public/js && rm -rf public/css/tailwind.css",
     "clean:build": "rm -rf build",
-    "clean:dumps": "",
+    "clean:shadow-dumps": "rm -f javacore.*.txt jitdump.*.dmp Snap.*.trc report.html",
     "legacy:start": "npm run watch:css & npm run watch:shadow",
     "serv:build": "node server_build.js",
     "serv:dev": "node server_dev.js"
