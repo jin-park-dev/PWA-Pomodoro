@@ -11,9 +11,6 @@ Output location - $ shadow-cljs release app --config-merge '{:output-dir "somewh
 7.6.1. Release Versions
 shadow-cljs release app --config-merge '{:release-version "v1"}'
 
-Service worker?
-worker.js
-
 Pushing out old cache javascript issue
 7.6.2. Filenames with Fingerprint-Hash
 
@@ -102,6 +99,9 @@ calva evaulate shortcuts - https://calva.io/commands-top10/
 
 ### Decision
 
+Following strictly guidelines of HTML5 semantic
+Strictly following best practice for HTML5 semantic
+
 CSS Grid layout, html etc info
 #### HTML5 semantic elements
 https://developer.mozilla.org/en-US/docs/Learn/HTML/Introduction_to_HTML/Document_and_website_structure#Enter_HTML5_structural_elements
@@ -112,6 +112,24 @@ https://www.w3schools.com/html/html5_semantic_elements.asp
 
 https://stackoverflow.com/questions/4781077/html5-best-practices-section-header-aside-article-elements
 
+
+#### Service worker
+Google Workbox v5.
+
+#### Sources
+
+| What? | Location | Type	| Comment	|
+|---	|---	|---	|---	|
+| Reagent SPA App | src/ | cljs | Main SPA App based on re-agent, re-frame (React)|
+| Static files | public/ | Html, CSS (1 essential, 1 tailwind generated), JS (watch) | Contains service worker, html, css. Used for development. public/js and public/css/tailwind.css are generated during development. (Further improvement can be made by completely seperating out dev. ,production, files. However extra effort to seperate, auto-copy etc seems like too much effort for small project like this.) Clean will clean only generated files. |
+| Build script | p-build.sh | Bash script | Run this as part of deployment |
+| Publish script | publish-master.sh | Bash script | Copies SPA App to server |
+| Shadow-CLJS | shadow-cljs.edn | Config for shadow-cljs | Build tool |
+| TailwindCSS (PostCSS) | tailwind.config.js, postcss.config.js | js config | TailwindCSS build witt PostCSS |
+| Static output | build/ | bash script | Copy Paste this to deploy. |
+|========|========|========|========================================|
+| dev - Githook | dev/ | bash script | For CI/CD system (jenkins) |
+| Server Deployment | deployment/ | Nginx Config | Copy of nginx config for deployment |
 
 ### ES6 Import => CLJS Require
 
@@ -144,21 +162,22 @@ Give examples
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
+This will get the app running on locally on http://localhost:9105
 
 ```
-Give the example
+$ npm install
 ```
 
 And repeat
 
 ```
-until finished
+$ npm start
 ```
 
-End with an example of getting some data out of the system or using it for a little demo
+Development server - http://localhost:9105
+Dashboard for build - http://localhost:9103/dashboard
+
+Check package.json for more details.
 
 ## Running the tests
 
