@@ -29,3 +29,4 @@ jitdump.*.dmp
 report.html
 
 build/*
+public/css/tailwind.css

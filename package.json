@@ -21,7 +21,7 @@
   },
   "scripts": {
     "start": "concurrently \"npm:watch*\" ",
-    "build": "npm run build:shadow && npm run build:pwa && npm run build:css",
+    "build": "npm run clean && npm run build:shadow && npm run build:css && npm run build:pwa",
     "clean": "npm run clean:build && npm run clean:dev",
     "build:copy": "copyfiles -u 1 public/css/main_style.css public/index.html public/js/* build",
     "build:pwa": "npm run build:copy && workbox injectManifest workbox-config.js",
