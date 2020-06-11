@@ -22,6 +22,7 @@
   "scripts": {
     "start": "concurrently \"npm:watch*\" ",
     "build": "npm run build:shadow && npm run build:pwa && npm run build:css",
+    "clean": "clean:build && clean:dev",
     "build:copy": "copyfiles -u 1 public/css/main_style.css public/index.html public/js/* build",
     "build:pwa": "npm run build:copy && workbox injectManifest workbox-config.js",
     "report": "npm run report:shadow",
@@ -31,6 +32,9 @@
     "build:shadow": "shadow-cljs release app",
     "build:css": "postcss src/assets/tailwind_config.css --output build/css/tailwind.css",
     "watch:css": "postcss src/assets/tailwind_config.css --output public/css/tailwind.css --watch",
+    "clean:dev": "rm -rf public/js && rm -rf public/css/tailwind.css",
+    "clean:build": "rm -rf build",
+    "clean:dumps": "",
     "legacy:start": "npm run watch:css & npm run watch:shadow",
     "serv:build": "node server_build.js",
     "serv:dev": "node server_dev.js"
