@@ -2,53 +2,47 @@ importScripts(
   "https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js"
 );
 
-const { precacheAndRoute } = workbox.precaching;
-const { registerRoute } = workbox.routing;
+const { createHandlerBoundToURL, precacheAndRoute } = workbox.precaching;
+const { NavigationRoute, registerRoute } = workbox.routing;
 const { CacheFirst, StaleWhileRevalidate } = workbox.strategies;
 const { CacheableResponse } = workbox.cacheableResponse;
 
 if (workbox) {
-  console.log(`Yay! Workbox is loaded 🎉`);
+  console.log(`Workbox is loaded 🎉`);
 
-  precacheAndRoute(self.__WB_MANIFEST);
+  precacheAndRoute(self.__WB_MANIFEST,
+    //  {cleanUrls: false,}
+     );
 
-  // precacheAndRoute([
-  //   {"revision":"f2a1451f77b3d98fa61f908d817b263d","url":"css/main_style.css"},
-  //   {"revision":"7b53b0f6218d83d6453993fe1d085745","url":"css/tailwind.css"},
-  //   {"revision":"8839e38f6d85b3ca7370e8c2e243230c","url":"index.html"},
-  //   {"revision":"eea321bd24a98f0b8c30483a6b8d6205","url":"js/main.js"},
-  //   // {"revision":"eea321bd24a98f0b8c304834b8d6205","url":"clock"},
-  //   // {"revision":"eea321ba24a98f0b8c30483a6b8d6205","url":"clock/"},
-  //   // {"revision":"eea321bd24a9cf0b8c30483a6b8d6205","url":"/"}
-  // ]);
-
-  // precacheAndRoute([
-  //   { url: "/", revision: "1" },
-  //   { url: "/index.html", revision: "1" },
-  //   { url: "/clock", revision: "1" },
-  //   { url: "/timer", revision: "1" },
-  //   { url: "/pomodoro", revision: "1" },
-  // ]);
-
+  // External resources pulled in HTML Head
   registerRoute(
     ({ url }) =>
+      url.origin === "https://cdnjs.cloudflare.com" ||
       url.origin === "https://fonts.googleapis.com" ||
       url.origin === "https://fonts.gstatic.com",
     new StaleWhileRevalidate({
-      cacheName: "server-google-fonts",
+      cacheName: "pomo-static-external",
     })
   );
 
-  // // Cache static (TODO: Not required currently)
+  // Cache static
   registerRoute(
     ({ url }) =>
       url.origin === self.location.origin &&
       url.pathname.startsWith("/static/"),
     new StaleWhileRevalidate({
-      cacheName: "server-local-static",
+      cacheName: "pomo-static-local",
     })
   );
 
+// For SPA (single page app), React for this case. Makes navigation work.
+// This assumes /index.html has been precached.
+// https://developers.google.com/web/tools/workbox/modules/workbox-routing#how_to_register_a_navigation_route
+const handler = createHandlerBoundToURL('/index.html');
+const navigationRoute = new NavigationRoute(handler);
+registerRoute(navigationRoute);
+
+
 } else {
-  console.log(`Boo! Workbox didn't load 😬`);
+  console.log(`Error! Workbox didn't load 😬`);
 }
