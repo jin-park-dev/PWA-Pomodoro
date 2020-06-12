@@ -241,7 +241,7 @@
        [:div.opacity-50.centered.animate__animated.animate__faster {:class @css-next-timer}  ; invisible as default stays in DOM if this converts into flex box.
         ;; [clock/digital-clean {:compound-duration {:h 0 :m next-pomo-length :s 0 :ms 0}}]
         [clock/digital-clean {:compound-duration {:m next-pomo-length}}]]
-       [:div.opacity-50.centered.text-3xl.text-gray-700.animate__animated {:class @css-current-session-text}
+       [:p.opacity-50.centered.text-3xl.animate__animated {:class @css-current-session-text}
         [:div#timer-label.btn.font-normal (if break? "Break" "Session")]]
        [:div.flex.flex-col.items-center.hidden ; HIDDEN. Here for freeCodeCamp Requirement
         [:div#timer-label.btn (if break? "Break" "Session")]
