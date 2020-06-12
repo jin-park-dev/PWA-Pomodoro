@@ -75,8 +75,9 @@ nav {
 }
 
 /* Pure formatting without color, expectation of logic (clickable) */
+
 .digital-clean-structure {
-    @apply flex flex-row text-6xl tracking-wide leading-none
+    @apply flex flex-row tracking-wide leading-none text-6xl
 }
 
 .digital-clean-azure {
@@ -85,6 +86,10 @@ nav {
 
 .digital-clean-jade {
     @apply digital-clean-structure text-teal-500 
+}
+
+.digital-vue {
+    @apply flex flex-row items-center justify-center h-full tracking-widest leading-tight text-2xl
 }
 
 

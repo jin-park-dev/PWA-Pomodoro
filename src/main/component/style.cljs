@@ -34,7 +34,7 @@
 
 ; Based on https://codepen.io/gau/pen/LjQwGp
 ; Clock-vue
-(def clock-digital-styled-vue--container-style {:height "400px"
-                                                :background "radial-gradient(ellipse at center,  #0a2e38  0%, #000000 100%)"
+(def clock-digital-styled-vue--container-style {:height "100%"
+                                                :background "radial-gradient(ellipse at center,  #0a2e38  0%, #000000 100%)"  ; Depending on screen colour may not as good as it could.
                                                 :background-size "100%"
                                                 :border "solid"})
