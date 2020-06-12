@@ -23,7 +23,7 @@
     "start": "npm run clean:dev && concurrently \"npm:watch*\" ",
     "build": "npm run clean && npm run build:shadow && npm run build:css && npm run build:pwa",
     "clean": "npm run clean:build && npm run clean:dev",
-    "build:copy": "copyfiles -u 1 public/css/main_style.css public/index.html public/js/* public/static/* build",
+    "build:copy": "copyfiles -u 1 public/css/main_style.css public/index.html public/manifest.json public/js/* public/static/* public/static/**/* build",
     "build:pwa": "npm run build:copy && workbox injectManifest workbox-config.js",
     "report": "npm run report:shadow",
     "report:shadow": "shadow-cljs run shadow.cljs.build-report app report.html",

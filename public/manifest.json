@@ -1,0 +1,20 @@
+{
+    "name": "PWA Pomodoro Plus",
+    "short_name": "Pomodoro+",
+    "description": "Simple Clean Pomodoro Timer",
+    "lang": "en-GB",
+    "start_url": "/",
+    "display": "standalone",
+    "theme_color": "#f34121",
+    "icons": [
+      {
+        "src": "static/icons/icon-192x192.png",
+        "sizes": "192x192"
+      },
+      {
+        "src": "static/icons/icon-512x512.png",
+        "sizes": "512x512"
+      }
+    ],
+    "background_color": "#2196f3"
+  }
