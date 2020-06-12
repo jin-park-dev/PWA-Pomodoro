@@ -43,13 +43,13 @@
                               (get-in @state [:start?]) compound-duration-plus-ms
                               :else compound-duration-plus-ms)]
       [:div.flex.flex-col.items-center.justify-center.content-center.self-center
-       [:div.flex.flex-row.text-6xl.tracking-wide.leading-none.text-teal-500.text-opacity-100.cursor-pointer.select-none
+       [:div.flex.flex-row.text-6xl.tracking-wide.leading-none.text-opacity-100.cursor-pointer.select-none
         {:on-click #(swap! state update-in [:ms-visible?] not)}
         [clock/digital-clean {:compound-duration compound-duration
                               :ms-placement (get-in @state [:ms-placement])
                               :ms-visible? (get-in @state [:ms-visible?])}]
-        #_[:div.text-base.tracking-wide.leading-none.text-teal-500.text-opacity-100.mt-2 ms]] ; I like side but it keeps changing, due to flex being responsive and fontsize being different. Maybe float or span?
-       (when (get-in @state [:ms?]) [:div.text-base.tracking-wide.leading-none.text-teal-500.text-opacity-100.mt-2 ms])
+        #_[:div.text-base.tracking-wide.leading-none.text-opacity-100.mt-2 ms]] ; I like side but it keeps changing, due to flex being responsive and fontsize being different. Maybe float or span?
+       (when (get-in @state [:ms?]) [:div.text-base.tracking-wide.leading-none.text-opacity-100.mt-2 ms])
        [:div.flex.flex-row.mt-5.text-xl
         #_[:button.btn.btn-nav.mr-2 {:on-click (fn [e]
                                                  (rf/dispatch [:dev/dev-switch]))}
@@ -242,7 +242,7 @@
         ;; [clock/digital-clean {:compound-duration {:h 0 :m next-pomo-length :s 0 :ms 0}}]
         [clock/digital-clean {:compound-duration {:m next-pomo-length}}]]
        [:div.opacity-50.centered.text-3xl.text-gray-700.animate__animated {:class @css-current-session-text}
-        [:div#timer-label.btn (if break? "Break" "Session")]]
+        [:div#timer-label.btn.font-normal (if break? "Break" "Session")]]
        [:div.flex.flex-col.items-center.hidden ; HIDDEN. Here for freeCodeCamp Requirement
         [:div#timer-label.btn (if break? "Break" "Session")]
         [:div#session-length.btn (humanize-double-digit (:m next-compound-duration-plus-ms)) #_":" #_(humanize-double-digit (:s next-compound-duration-plus-ms))] ; HIDDEN. Here for freeCodeCamp Requirement
@@ -281,7 +281,7 @@
                              (next-timer-animate-fn-logic))}
                 (when (<= next-pomo-length 1) btn-invalid))
          "-"]
-        [:div.flex.flex-row.text-6xl.tracking-wide.leading-none.text-teal-500.text-opacity-100.cursor-pointer.select-none.mx-12
+        [:div.flex.flex-row.text-6xl.tracking-wide.leading-none.text-opacity-100.cursor-pointer.select-none.mx-12
          {:on-click (fn []
                       (swap! state update-in [:ms-visible?] not)
                       (animate-css-fade-fn css-current-session-text 1200))}
@@ -289,14 +289,14 @@
                               ;;  :compound-duration display-compound-duration
                                :ms-placement (get-in @state [:ms-placement])
                                :ms-visible? (get-in @state [:ms-visible?])}]
-         #_[:div.text-base.tracking-wide.leading-none.text-teal-500.text-opacity-100.mt-2 ms]]
+         #_[:div.text-base.tracking-wide.leading-none.text-opacity-100.mt-2 ms]]
         [:button#session-increment.btn.btn-nav.rounded-r-full.rounded-l.self-center.transition-25to100
          (merge {:on-click (fn []
                              (swap! state update-in [:value-next-end] (fn [v] (date-fns/addMinutes v 1)))
                              (next-timer-animate-fn-logic))}
                 (when (>= next-pomo-length 59) btn-invalid))  ; freeCodeCamp Requirement
          "+"]]
-       (when (get-in @state [:ms?]) [:div.text-base.tracking-wide.leading-none.text-teal-500.text-opacity-100.mt-2 ms])
+       (when (get-in @state [:ms?]) [:div.text-base.tracking-wide.leading-none.text-opacity-100.mt-2 ms])
        [:div.flex.flex-row.mt-10.text-xl.transition-25to100.opacity-50
         [:button#reset.btn.btn-nav.mr-8 {:on-click (fn [e] (fn-reset e))} "Reset"]
         [:button#start_stop.btn.btn-nav {:on-click (fn [e] (if clean?

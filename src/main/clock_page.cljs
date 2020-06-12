@@ -2,13 +2,10 @@
   (:require
    [reagent.core :as reagent]
    [re-frame.core :as rf]
-   [state.subs :as sub]
    [stylefy.core :as stylefy :refer [use-style]]
    [date-fns :as date-fns]
-   [util.dev :refer [dev-panel]]
    [component.clock :as clock]
-   [component.style :refer [clock-styled-vue clock-styled-vue-item
-                            clock-digital-styled-vue--container-style]]))
+   [component.style :refer [clock-digital-styled-vue--container-style]]))
 
 ; See https://date-fns.org/docs/format for formatting of date
 
@@ -60,7 +57,7 @@
                      state (reagent/atom {:date-visible? false
                                           :ms-visible? false
                                           :dev? @(rf/subscribe [:dev?])})]
-    [:div#clock-styled-vue.w-full.btn-like (use-style clock-digital-styled-vue--container-style
+    [:div#clock-styled-vue.w-full.btn-like.rounded-sm (use-style clock-digital-styled-vue--container-style
                                                       {:on-click (fn []
                                                                    (swap! state update-in [:date-visible?] not)
                                                                    (swap! state update-in [:ms-visible?] not))})
