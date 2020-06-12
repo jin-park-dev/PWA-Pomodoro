@@ -1,15 +1,13 @@
 (ns util.dev
   (:require
-   [reagent.core :as reagent]
-   [stylefy.core :as stylefy :refer [use-style]]
-   [date-fns :as date-fns]
-   [util.time :refer [seconds->duration]]))
+   [reagent.core :as reagent]))
 
 
 ; Temp
 ; Better way to get iteration number. Maybe merge in at start?
-(defn dev-panel [states]
+(defn dev-panel
   "Vector of atoms (state)"
+  [states]
   [:div.bg-teal-200.shadow.p-4.mt-5
    [:h1.text-4xl.font-bold.mb-2 "Dev-panel"]
    #_[:div

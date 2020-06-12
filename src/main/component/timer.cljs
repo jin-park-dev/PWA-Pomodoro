@@ -1,7 +1,5 @@
 (ns component.timer
   (:require [reagent.core :as reagent]
-            [stylefy.core :as stylefy :refer [use-style]]
-            [date-fns :as date-fns]
             [util.time :refer [humanize-double-digit]]))
 
 

@@ -3,9 +3,9 @@
    [reagent.core :as reagent]
    [re-frame.core :as rf]
    [util.dev :refer [dev-panel]]
-   [stylefy.core :as stylefy :refer [use-style]]
    [component.style :refer [fn-animate-css]]
-   [state.index]))
+   [state.index]
+   ["react-router-dom" :refer (Link)]))
 
 (defn index-panel []
   (let [css-h1-intro (if @(rf/subscribe [:index-initial?])
@@ -20,7 +20,7 @@
        [:div.text-center
         [:p "Simple no nonsense Pomodoro Timer"]
         [:p "Powered by Progressive Web App"]]
-       [:button.btn.btn-nav.mt-5 "Start"]
+       [:> Link {:to "pomodoro"} [:button.btn.btn-nav.mt-5 "Start"]]
        (when @(rf/subscribe [:dev?]) [dev-panel [css-h1-intro]])])))
 
 (defn index-page-container []

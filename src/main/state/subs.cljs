@@ -1,7 +1,6 @@
 (ns state.subs
   (:require
-   [re-frame.core :as rf]
-   [state.db :as db]))
+   [re-frame.core :as rf]))
 
 
 (rf/reg-sub

@@ -1,7 +1,6 @@
 (ns state.index
   (:require
-   [re-frame.core :as rf]
-   #_[state.db :as db]))
+   [re-frame.core :as rf]))
 
 ; Trying different way of keeping event and subscription together. Based on page over events
 

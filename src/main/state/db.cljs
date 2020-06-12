@@ -1,7 +1,6 @@
 (ns state.db)
 
-(def theme ["theme-jade" "theme-azure"])
-;; (def theme ["digital-clean-azure" "digital-clean-jade"])
+(def theme ["jade" "azure"])
 
 
 (def default-db {:name "PWAdoro"})
@@ -20,6 +19,6 @@
                             ; Overall theme of the page. Temping to do customization here but it will only work only for simple-clean. Once vue-style it hard to compose without
                             ; ending up in a mess with one need some, other not.
                             ; So decision to put as much as I can in tailwind and small customization there.
-                            :theme {:general (str "theme-" "jade") ; azure
+                            :theme {:general (str "theme-" "azure") ; azure
                                     :time {:style "digital-clean-structure"}  ; This can be digital or something else?
                                     }})

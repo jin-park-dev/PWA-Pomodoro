@@ -3,8 +3,6 @@
    [reagent.core :as r]
    [reagent.dom :as d]
    [re-frame.core :as rf]
-   [state.subs :as sub]
-
    [state.events :as events]
 
    [index-page :refer (index-page-container)]

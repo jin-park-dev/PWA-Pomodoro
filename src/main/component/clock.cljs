@@ -2,9 +2,7 @@
   (:require [reagent.core :as reagent]
             [stylefy.core :as stylefy :refer [use-style]]
             [date-fns :as date-fns]
-            [util.time :refer [humanize-double-digit]]
-            [component.style :refer [clock-styled-vue clock-styled-vue-item
-                                     clock-digital-styled-vue--container-style]]))
+            [component.style :refer [clock-styled-vue clock-styled-vue-item]]))
 
 ; TOOD: All time components - ms-placement "right", due to flexbox rule will keep adjusting, aka timer shaking right and left. Using bottom only for now.
 

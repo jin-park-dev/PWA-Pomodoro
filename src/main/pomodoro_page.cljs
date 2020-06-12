@@ -2,11 +2,9 @@
   (:require
    [reagent.core :as reagent]
    [re-frame.core :as rf]
-   [state.subs :as sub] ; Needed for subs
-   [stylefy.core :as stylefy :refer [use-style]]
    [date-fns :as date-fns]
    ["react-tooltip" :as ReactTooltip]
-   [util.time :refer [seconds->duration diff-in-duration humanize-double-digit]]
+   [util.time :refer [diff-in-duration humanize-double-digit]]
    [util.dev :refer [dev-panel]]
    [component.timer :as clock]
    [component.input :as input]
@@ -241,8 +239,8 @@
        [:div.opacity-50.centered.animate__animated.animate__faster {:class @css-next-timer}  ; invisible as default stays in DOM if this converts into flex box.
         ;; [clock/digital-clean {:compound-duration {:h 0 :m next-pomo-length :s 0 :ms 0}}]
         [clock/digital-clean {:compound-duration {:m next-pomo-length}}]]
-       [:p.opacity-50.centered.text-3xl.animate__animated {:class @css-current-session-text}
-        [:div#timer-label.btn.font-normal (if break? "Break" "Session")]]
+       [:div.opacity-50.centered.text-3xl.animate__animated {:class @css-current-session-text}
+        [:p#timer-label.btn.font-normal (if break? "Break" "Session")]]
        [:div.flex.flex-col.items-center.hidden ; HIDDEN. Here for freeCodeCamp Requirement
         [:div#timer-label.btn (if break? "Break" "Session")]
         [:div#session-length.btn (humanize-double-digit (:m next-compound-duration-plus-ms)) #_":" #_(humanize-double-digit (:s next-compound-duration-plus-ms))] ; HIDDEN. Here for freeCodeCamp Requirement

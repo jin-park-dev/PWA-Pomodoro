@@ -3,7 +3,6 @@
    [reagent.core :as reagent]
    [re-frame.core :as rf]
    [state.subs :as sub]
-   [stylefy.core :as stylefy :refer [use-style]]
    [date-fns :as date-fns]
    [util.time :refer [seconds->duration]]
    [util.dev :refer [dev-panel]]
