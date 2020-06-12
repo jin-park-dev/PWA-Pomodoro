@@ -56,6 +56,14 @@
  (fn [db [_]]
    (update-in db [:dev :dev-panel?] not)))
 
+
+; Theme changing
+(rf/reg-event-db
+ :theme/set-text-color
+ (fn [db [_ color]]
+   (assoc-in db [:theme :general] (str "text" "-" color))))
+
+
 (comment
   (pr-str @(rf/subscribe [:dev?]))
   (rf/dispatch [:dev/dev-switch])

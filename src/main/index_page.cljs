@@ -4,8 +4,22 @@
    [re-frame.core :as rf]
    [util.dev :refer [dev-panel]]
    [component.style :refer [fn-animate-css]]
+   [component.theme :as theme]
    [state.index]
+   [state.db :refer [theme-colors]]
    ["react-router-dom" :refer (Link)]))
+
+
+;; (def theme-actions (map (fn [color] (keyword color)) theme-colors))
+
+#_(defn create-themes
+  "Contains logic, to create right css, re-frame event in {:azure (fn [color] (rf/dispatch [:theme/set-text-color color]))}"
+  [theme-colors]
+  (let [theme-colors-key (map (fn [color] (keyword color)) theme-colors)
+        theme-colors-values (map (fn [color] 
+                                   (js/console.log color)
+                                   (rf/dispatch [:theme/set-text-color color])) theme-colors)]
+    (zipmap theme-colors-key theme-colors-values)))
 
 (defn index-panel []
   (let [css-h1-intro (if @(rf/subscribe [:index-initial?])
@@ -20,7 +34,8 @@
        [:div.text-center
         [:p "Simple no nonsense Pomodoro Timer"]
         [:p "Powered by Progressive Web App"]]
-       [:> Link {:to "pomodoro"} [:button.btn.btn-nav.mt-5 "Start"]]
+       [:> Link {:to "pomodoro" :class "mb-5"} [:button.btn.btn-nav.mt-5 "Start"]]
+       [theme/picker theme-colors]
        (when @(rf/subscribe [:dev?]) [dev-panel [css-h1-intro]])])))
 
 (defn index-page-container []
