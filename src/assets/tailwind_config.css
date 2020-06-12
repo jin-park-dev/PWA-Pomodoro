@@ -64,4 +64,30 @@ nav {
     @apply opacity-100
 }
 
+/*  */
+/* Clock/Timer style */
+/*  */
+/* Abstracting whole style to here. */
+/* DB contains which one of these. */
+
+.btn-like {
+    @apply cursor-pointer select-none
+}
+
+/* Pure formatting without color, expectation of logic (clickable) */
+.digital-clean-structure {
+    @apply flex flex-row text-6xl tracking-wide leading-none
+}
+
+.digital-clean-azure {
+    @apply digital-clean-structure text-blue-500 
+}
+
+.digital-clean-jade {
+    @apply digital-clean-structure text-teal-500 
+}
+
+
+
+
 @tailwind utilities;

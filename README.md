@@ -131,6 +131,36 @@ Google Workbox v5.
 | dev - Githook | dev/ | bash script | For CI/CD system (jenkins) |
 | Server Deployment | deployment/ | Nginx Config | Copy of nginx config for deployment |
 
+#### Designs
+
+There's difference is datatype passed down between pomodoro and time component. This is due to choice in date time library and lack of support for working with time duration.
+
+This is required in the first place due to 1ms from setInterval is JS will be out of sync. On MacOS in KanXdoro, after while 25min can be up to 36min on MacBook Pro 2018.
+
+Doing research new hip things is to go functional, immutable style of date time library in JS world. Even moments.js creator is creating new library currently not as featured but seperate to moments.
+
+"date-fns - modern JavaScript date utility library" - is what come up in google search, highly regarded in my research.
+
+Many library, other ones even in clojurescript does not seem to make it easy to work with duration and would require same type of calculation I have done. Turns out moments.js is very good if you need duration.
+
+(In python world there is arrow and pendulum. Duration hasn't been issue from memory)
+
+#### Pomodoro - Custom Data structure (as duration is not supported)
+
+After trying this out, using moments would been much much simpler. I have to create duration as library itself does not support it.
+
+Uses difference of time to create "duration". (Moments.js has this but Date-fns does not.) For current pomodoro, and next pomodoro, next date.
+
+This forces lot more calculations required and holding of state to make duration.
+
+Component, has to have custom non-datetime object passed down as hash-map with all the values.
+
+Also I have to manually format dates coming out from duration (difference). This created way more work then going down momoents.js route.
+
+#### Time - date-fns leveraged (as it is possible)  
+
+As no calculation is required I can use fully use formatting from date-fns library.
+
 ### ES6 Import => CLJS Require
 
 See https://shadow-cljs.github.io/docs/UsersGuide.html#_using_npm_packages

@@ -19,6 +19,11 @@
  (fn [db]
    (get-in db [:dev :dev-panel?])))
 
+(rf/reg-sub
+ :theme-time-style
+ (fn [db]
+   (get-in db [:theme :time :style])))
+
 
 (comment
   (pr-str @(rf/subscribe [:dev?])) 

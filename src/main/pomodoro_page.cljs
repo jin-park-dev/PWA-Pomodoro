@@ -8,10 +8,11 @@
    ["react-tooltip" :as ReactTooltip]
    [util.time :refer [seconds->duration diff-in-duration humanize-double-digit]]
    [util.dev :refer [dev-panel]]
-   [component.clock :as clock]
+   [component.timer :as clock]
    [component.input :as input]
    [component.style :refer [btn-invalid fn-animate-css]]))
 
+; TOOD: All time components - ms-placement "right", due to flexbox rule will keep adjusting, aka timer shaking right and left. Using bottom only for now.
 
 (defn pomodoro-simple []
   (reagent/with-let [state (reagent/atom {:start (.now js/Date)
@@ -314,7 +315,7 @@
        [:audio {:ref (fn [e] (reset! alarm-ref e))
                 :id "beep"
                 :preload "auto"
-                :src "https://raw.githubusercontent.com/freeCodeCamp/cdn/master/build/testable-projects-fcc/audio/BeepSound.wav"
+                :src "/static/Baoding-balls-ding.mp3"
                 :controls false}]
        (when @(get-in @state [:dev?]) [dev-panel [state timer-id alarm-ref]])])
     (finally (js/clearInterval timer-id))))

@@ -4,7 +4,11 @@
    [re-frame.core :as rf]
    [state.subs :as sub]
    [stylefy.core :as stylefy :refer [use-style]]
-   [date-fns :as date-fns]))
+   [date-fns :as date-fns]
+   [util.dev :refer [dev-panel]]
+   [component.clock :as clock]
+   [component.style :refer [clock-styled-vue clock-styled-vue-item
+                            clock-digital-styled-vue--container-style]]))
 
 ; See https://date-fns.org/docs/format for formatting of date
 
@@ -33,27 +37,22 @@
 
 ; with-let seems only need form-1 or is it form-2 ??? - https://github.com/reagent-project/reagent/issues/378
 ; With each hour/min/seconds time pulled out it can be more styled
-(defn clock-digital-styled-basic [style]
+(defn clock-digital-clean-container [style]
   (reagent/with-let [time-now (reagent/atom (.now js/Date))
-                     timer-fn (js/setInterval #(reset! time-now (.now js/Date)) 500)
-                     state (reagent/atom {:dev? @(rf/subscribe [:dev?])})]
-    [:div#clock-styled.flex.flex-row.text-6xl.tracking-wide.leading-none.text-teal-500.text-opacity-100
-     [:div (date-fns/format @time-now "h")]
-     [:div ":"]
-     [:div (date-fns/format @time-now "mm")]
-     [:div ":"]
-     [:div.mr-5 (date-fns/format @time-now "ss")]
-     [:div (date-fns/format @time-now "aaa")]]
-
+                     timer-fn (js/setInterval #(reset! time-now (.now js/Date)) 10)
+                     state (reagent/atom {:date-visible? false
+                                          :ms-visible? false
+                                          :dev? @(rf/subscribe [:dev?])})]
+    [:div#clock-styled.btn-like {:on-click (fn []
+                                             (swap! state update-in [:date-visible?] not)
+                                             (swap! state update-in [:ms-visible?] not))}
+     [:div.my-5 [clock/digital-clean {:time-now @time-now
+                                      :date-visible? (get-in @state [:date-visible?])
+                                      :ms-placement "bottom"
+                                      :ms-visible? (get-in @state [:ms-visible?])
+                                      :class @(rf/subscribe [:theme-time-style])}]]]
     (finally (js/clearInterval timer-fn))))
 
-(def clock-styled-vue {:font-family "'Share Tech Mono', monospace"
-                       :color "#daf6ff"
-                       :text-shadow "0 0 20px rgba(10, 175, 230, 1),  0 0 20px rgba(10, 175, 230, 0)"})
-
-(def clock-styled-vue-item {; :grid-area "a"
-                            :align-self "center"
-                            :justify-self "center"})
 
 (defn clock-digital-styled-vue [style]
   (reagent/with-let [time-now (reagent/atom (.now js/Date))
@@ -73,11 +72,7 @@
 
     (finally (js/clearInterval timer-fn))))
 
-; Based on https://codepen.io/gau/pen/LjQwGp
-(def clock-digital-styled-vue--container-style {:height "400px"
-                                                :background "radial-gradient(ellipse at center,  #0a2e38  0%, #000000 100%)"
-                                                :background-size "100%"
-                                                :border "solid"})
+
 
 ; Might not need this layer
 (defn clock-digital-styled-vue--container []
@@ -89,7 +84,7 @@
     (fn []
       [:div.flex.flex-col.items-center.h-full
        [:div.mb-5 (if @nav-styled? [:button.btn.btn-nav {:on-click #(swap! nav-styled? not)} "Styled"] [:button.btn.btn-nav {:on-click #(swap! nav-styled? not)} "Clean"])]
-       [:div.flex-center.h-full.w-full (if @nav-styled? [clock-digital-styled-vue--container] [:div [clock-digital-styled-basic]])]])))
+       [:div.flex-center.h-full.w-full (if @nav-styled? [clock-digital-styled-vue--container] [:div [clock-digital-clean-container]])]])))
 
 (defn clock-page-container []
   [:main [clock-panel-nav]])
