@@ -83,11 +83,13 @@ That way logic to switch in nav are way simpler
 
 ### Tech docs
 
-stylefy - https://github.com/Jarzka/stylefy
+stylefy - https://github.com/Jarzka/stylefy (https://jarzka.github.io/stylefy/doc/stylefy.core.html)
 (Alternative - https://github.com/dvingo/cljs-styled-components)
 
 Shadow CLJS - https://shadow-cljs.github.io/docs/UsersGuide.html
-Reagent - https://cljdoc.org/d/reagent/reagent/1.0.0-alpha2/doc/tutorials/react-features
+
+Reagent - https://cljdoc.org/d/reagent/reagent/1.0.0-alpha2/doc/tutorials/react-features (https://reagent-project.github.io/docs/master/reagent.core.html#var-create-class)
+
 concurrently - https://www.npmjs.com/package/concurrently
 
 animate css - https://animate.style/

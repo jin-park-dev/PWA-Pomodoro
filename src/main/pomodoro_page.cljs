@@ -89,9 +89,6 @@
                                           ;; for calculating next pomodoro length. 25 by default.
                                           :value-next-start (date-fns/addMinutes (.now js/Date) 0) ; Doesn't mutate in length calc logic (although logic can, my design I only modify end.)
                                           :value-next-end (date-fns/addMinutes (.now js/Date) 25)
-                                          ;; :value-break-end (date-fns/addSeconds (.now js/Date) (+ 1 (* 5 60)))  ;default break of 5 minutes. Gives 4. diff in ms must be rounded down.
-                                          ;; :value-break (date-fns/add (.now js/Date) {:minutes 5 :seconds 1})  ;default break of 5 minutes
-                                          ;; :value-
 
                                           :dev? (rf/subscribe [:dev?])}) ; Seems not reactive if I destructure here
 
@@ -194,6 +191,7 @@
                                    (swap! state assoc-in [:running?] true)
                                    (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))
                                    (swap! state assoc-in [:end] (date-fns/addMilliseconds (.now js/Date) pomo-left-length))
+                                   (animate-css-fade-fn css-current-session-text 1200)
                                    (swap! timer-id timer-fn)))
 
                      fn-pause (fn [e]

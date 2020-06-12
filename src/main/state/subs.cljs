@@ -24,6 +24,11 @@
  (fn [db]
    (get-in db [:theme :time :style])))
 
+(rf/reg-sub
+ :theme/general
+ (fn [db]
+   (get-in db [:theme :general])))
+
 
 (comment
   (pr-str @(rf/subscribe [:dev?])) 

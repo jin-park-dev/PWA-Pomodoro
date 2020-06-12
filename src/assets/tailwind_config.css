@@ -24,6 +24,18 @@
 
 @tailwind components;
 
+/* Theme - Currently only font colour */
+
+.theme-jade {
+    @apply text-teal-500 
+}
+
+.theme-azure {
+    @apply text-blue-500 
+}
+
+/* Nav */
+
 nav {
     @apply border-b-2 border-solid border-gray-500 p-2
 }
@@ -44,6 +56,7 @@ nav {
     @apply text-black;
 }
 
+/* Button */
 
 .btn {
     @apply font-bold py-2 px-4 rounded;
@@ -76,16 +89,9 @@ nav {
 
 /* Pure formatting without color, expectation of logic (clickable) */
 
+/* Possible to get up to down style (this is left to right), more Asian style */
 .digital-clean-structure {
     @apply flex flex-row tracking-wide leading-none text-6xl
-}
-
-.digital-clean-azure {
-    @apply digital-clean-structure text-blue-500 
-}
-
-.digital-clean-jade {
-    @apply digital-clean-structure text-teal-500 
 }
 
 .digital-vue {
