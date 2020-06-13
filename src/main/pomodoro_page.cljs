@@ -32,12 +32,12 @@
                                               (swap! state assoc-in [:finished?] true)))
                                           70))]
     (let [compound-duration-all (diff-in-duration (get-in @state [:end]) (get-in @state [:start]))
-          compound-duration-filtered (dissoc compound-duration-all :w :d)
+          compound-duration-filtered (dissoc compound-duration-all :w :d :h)
           ms (when (get-in @state [:start?]) (mod (date-fns/differenceInMilliseconds (get-in @state [:end]) (get-in @state [:start])) 1000))
           compound-duration-plus-ms (assoc compound-duration-filtered :ms ms)
           ; compound-duration contains logic for what shows up inside of main timer.
           compound-duration (cond
-                              (get-in @state [:finished?]) {:h 0 :m 0 :s 0 :ms 0}
+                              (get-in @state [:finished?]) {:m 0 :s 0 :ms 0}
                               (get-in @state [:start?]) compound-duration-plus-ms
                               :else compound-duration-plus-ms)]
       [:div.flex.flex-col.items-center.justify-center.content-center.self-center
@@ -198,13 +198,13 @@
 
     (let [; Currently running
           compound-duration-all (diff-in-duration (get-in @state [:end]) (get-in @state [:start])) #_(seconds->duration (date-fns/differenceInSeconds (get-in @state [:end]) (get-in @state [:start])))
-          compound-duration-filtered (dissoc compound-duration-all :w :d)
+          compound-duration-filtered (dissoc compound-duration-all :w :d :h)
           ms (when (get-in @state [:running?]) (mod (date-fns/differenceInMilliseconds (get-in @state [:end]) (get-in @state [:start])) 1000))
           compound-duration-plus-ms (assoc compound-duration-filtered :ms ms)
 
           ; Next to run
           next-compound-duration-all (diff-in-duration (get-in @state [:value-next-end]) (get-in @state [:value-next-start])) #_(seconds->duration (date-fns/differenceInSeconds (get-in @state [:end]) (get-in @state [:start])))
-          next-compound-duration-filtered (dissoc next-compound-duration-all :w :d)
+          next-compound-duration-filtered (dissoc next-compound-duration-all :w :d :h)
           next-ms (when (get-in @state [:running?]) (mod (date-fns/differenceInMilliseconds (get-in @state [:value-next-end]) (get-in @state [:value-next-start])) 1000))
           next-compound-duration-plus-ms (assoc next-compound-duration-filtered :ms next-ms)
 
@@ -220,7 +220,7 @@
           display-compound-duration (reagent/atom (cond
                                                     clean? next-compound-duration-plus-ms
                                                     running? compound-duration-plus-ms
-                                                    finished? {:h 0 :m 0 :s 0 :ms 0} ; Now this doesn't need to be hard coded and actual calculation should give same. Also interval should stop and not countdown below
+                                                    finished? {:m 0 :s 0 :ms 0} ; {:h 0 :m 0 :s 0 :ms 0} Now this doesn't need to be hard coded and actual calculation should give same. Also interval should stop and not countdown below
                                                     :else compound-duration-plus-ms #_{:h 1 :m 2 :s 3 :ms 4}))
 
           ;; display-compound-duration (cond
@@ -279,7 +279,7 @@
                              (next-timer-animate-fn-logic))}
                 (when (<= next-pomo-length 1) btn-invalid))
          "-"]
-        [:div.flex.flex-row.text-6xl.tracking-wide.leading-none.text-opacity-100.cursor-pointer.select-none.mx-12
+        [:div.flex.flex-row.text-6xl.tracking-wide.leading-none.text-opacity-100.cursor-pointer.select-none.mx-3.sm:mx-12
          {:on-click (fn []
                       (swap! state update-in [:ms-visible?] not)
                       (animate-css-fade-fn css-current-session-text 1200))}

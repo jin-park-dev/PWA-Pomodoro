@@ -26,27 +26,27 @@
   [:> BrowserRouter
    [:div.grid-style {:class @(rf/subscribe [:theme/general-text 500])}
     [:nav
-     [:ul.flex.flex-row.justify-center
-      [:li.mr-6
+     [:ul.nav-container
+      [:li.mr-2.sm:mr-6
        [:> NavLink {:to "/"
                     :active-class-name "nav-link--active"
                     :exact true
-                    :class "nav nav-link"} "Home"]]
-      [:li.mr-6
+                    :class "nav-btn nav-link"} "Home"]]
+      [:li.mr-2.sm:mr-6
        [:> NavLink {:to "/clock/"
                     :activeClassName "nav-link--active"
-                    :class "nav nav-link"} "Clock"]]
-      [:li.mr-6
+                    :class "nav-btn nav-link"} "Clock"]]
+      [:li.mr-2.sm:mr-6
        [:> NavLink {:to "/timer/"
                     :activeClassName "nav-link--active"
-                    :class "nav nav-link"} "Timer"]]
-      [:li.mr-6
+                    :class "nav-btn nav-link"} "Timer"]]
+      [:li
        [:> NavLink {:to "/pomodoro/"
                     :activeClassName "nav-link--active"
-                    :class "nav nav-link"} "Pomodoro"]]
+                    :class "nav-btn nav-link"} "Pomodoro"]]
       (when @(rf/subscribe [:dev-panel?])
         [:li.mr-6.cursor-pointer.text-sm
-         [:a.nav.nav-link.text-indigo-400
+         [:a.nav-btn.nav-link.text-indigo-400
           {:on-click (fn [e]
                        (.preventDefault e)
                       ;;  (rf/dispatch [:dev/dev-panel-switch])
