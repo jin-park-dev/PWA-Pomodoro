@@ -1,6 +1,7 @@
 (ns state.db)
 
-(def theme-colors ["azure" "jade"])
+; This matches tailwind_config.css. <= generates config.
+(def theme-colors ["azure" "jade" "ruby"])
 
 
 (def default-db {:name "PWAdoro"})
@@ -19,6 +20,6 @@
                             ; Overall theme of the page. Temping to do customization here but it will only work only for simple-clean. Once vue-style it hard to compose without
                             ; ending up in a mess with one need some, other not.
                             ; So decision to put as much as I can in tailwind and small customization there.
-                            :theme {:general (str "text" "-" "azure") ; azure/jade
+                            :theme {:general (first theme-colors) ; azure as default
                                     :time {:style "digital-clean-structure"}  ; This can be digital or something else?
                                     }})

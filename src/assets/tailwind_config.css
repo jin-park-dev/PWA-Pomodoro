@@ -30,11 +30,15 @@
 /* Theme - Currently only font colour */
 
 .theme-jade {
-    @apply text-jade; /* Same as "text-teal-500". Named to be easier in usage */
+    @apply text-jade-500; /* Same as text-ruby (default). Same as "text-teal-500". Named to be easier in usage */
 }
 
 .theme-azure {
-    @apply text-azure; /* Same as "text-blue-500". Named to be easier in usage */
+    @apply text-azure-500; /* Same as text-ruby (default). Same as "text-blue-500". Named to be easier in usage */
+}
+
+.theme-ruby {
+    @apply text-ruby-500; /* Same as text-ruby (default). Same as "text-blue-500". Named to be easier in usage */
 }
 
 /* Theme helper */

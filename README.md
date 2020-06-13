@@ -163,6 +163,18 @@ Also I have to manually format dates coming out from duration (difference). This
 
 As no calculation is required I can use fully use formatting from date-fns library.
 
+#### Theme
+
+Use tailwindcss and add in db.cljs.
+Tailwind generates all the css. System is hooked up to use theme from "theme-colors" in db.cljs. Rest of system will react to "theme-colors.
+
+##### Flow
+
+tailwind.config.jg => tailwind_config.css => db.cljs
+Add colour, Add "theme-xxxxxxx", add in theme-colors venctor.
+
+
+
 ### ES6 Import => CLJS Require
 
 See https://shadow-cljs.github.io/docs/UsersGuide.html#_using_npm_packages

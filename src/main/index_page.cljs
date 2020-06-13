@@ -12,15 +12,6 @@
 
 ;; (def theme-actions (map (fn [color] (keyword color)) theme-colors))
 
-#_(defn create-themes
-  "Contains logic, to create right css, re-frame event in {:azure (fn [color] (rf/dispatch [:theme/set-text-color color]))}"
-  [theme-colors]
-  (let [theme-colors-key (map (fn [color] (keyword color)) theme-colors)
-        theme-colors-values (map (fn [color] 
-                                   (js/console.log color)
-                                   (rf/dispatch [:theme/set-text-color color])) theme-colors)]
-    (zipmap theme-colors-key theme-colors-values)))
-
 (defn index-panel []
   (let [css-h1-intro (if @(rf/subscribe [:index-initial?])
                        (reagent/atom "animate__flipInX")
@@ -28,13 +19,13 @@
                        )]
     (fn []
       [:div.flex-center.h-full
-       [:h1.cursor-pointer.select-none.animate__animated {:class @css-h1-intro
+       [:h1.text-center.cursor-pointer.select-none.animate__animated {:class @css-h1-intro
                                                           :on-click (fn [] (fn-animate-css css-h1-intro "animate__flipInX" nil 1200))}
         "Welcome to PWA-Pomo"]
        [:div.text-center
         [:p "Simple no nonsense Pomodoro Timer"]
         [:p "Powered by Progressive Web App"]]
-       [:> Link {:to "pomodoro" :class "mb-5"} [:button.btn.btn-nav.mt-5 "Start"]]
+       [:> Link {:to "pomodoro" :class "my-5"} [:button.btn.btn-nav "Start"]]
        [theme/picker theme-colors]
        (when @(rf/subscribe [:dev?]) [dev-panel [css-h1-intro]])])))
 

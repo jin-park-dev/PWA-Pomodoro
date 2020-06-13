@@ -28,7 +28,13 @@
  (fn [db]
    (get-in db [:theme :general])))
 
+(rf/reg-sub
+ :theme/general-text
+ (fn []
+   (rf/subscribe [:theme/general]))
+ (fn [color [_ _lvl]]
+   (str "text-" color "-" _lvl)))
+
 
 (comment
-  (pr-str @(rf/subscribe [:dev?])) 
-  )
+  (pr-str @(rf/subscribe [:dev?])))
