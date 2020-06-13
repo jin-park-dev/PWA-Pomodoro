@@ -22,7 +22,8 @@
         (js/console.log "hover:bg-color: " hover:bg-color)
         (js/console.log "color: " color)
         ^{:key color} [:button.py-3.px-3.outline-none.focus:shadow-outline.text-white.rounded.mx-1
-                       {:on-click (fn [e] (rf/dispatch [:theme/set-text-color color]))
+                       {:on-click (fn [e] (rf/dispatch [:theme/set-text-color color])
+                                    )
                         :class (str
                                 bg-color  ; default background color
                                 " "
