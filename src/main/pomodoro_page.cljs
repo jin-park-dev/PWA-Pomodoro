@@ -67,6 +67,7 @@
        (when @(get-in @state [:dev?]) [dev-panel [state timer-id]])])
     (finally (js/clearInterval @timer-id))))
 
+
 ; date-fns unlike moments does not have duration I can use. I have to caclculate time to get any duration
 ; This mut be done since js interval are not safe and will go out of sync
 (defn pomodoro-simple--options []
