@@ -13,27 +13,136 @@
 
 ; TOOD: All time components - ms-placement "right", due to flexbox rule will keep adjusting, aka timer shaking right and left. Using bottom only for now.
 
+
+; Logic here is earlier, simpler, not as good as advance version. Less features.
 (defn pomodoro-simple []
-  (reagent/with-let [state (reagent/atom {:start (.now js/Date)
+  (reagent/with-let [state (reagent/atom {; For visual only. Automatically mutated in system.
+                                          :start (.now js/Date)
                                           :end (date-fns/addMinutes (.now js/Date) 25)
-                                          ;; :end (date-fns/addSeconds (.now js/Date) 5)
+
                                           :ms-visible? false
                                           :ms-placement "bottom"
 
-                                          :start? false
-                                          :finished? false
-                                          
+                                          ; Required due to user interactions
+                                          :clean? true ; Inital state of running not have happened at all. E.g user interaction Clean
+                                          :running? false
+                                          :finished? false ; Timer has finished (Reached 0). 
+                                          :break? false; Tracking break
+
+                                          ;; for calculating break length. Due to lack of duration concept and being able to use, it needs to be stored this way
+                                          :value-break-start (.now js/Date) ; Doesn't mutate in length calc logic (although logic can, my design I only modify end.)
+                                          :value-break-end (date-fns/addMinutes (.now js/Date) 5)  ;default break of 5 minutes. Gives 4. diff in ms must be rounded down.
+
+                                          ;; for calculating next pomodoro length. 25 by default.
+                                          :value-next-start (date-fns/addMinutes (.now js/Date) 0) ; Doesn't mutate in length calc logic (although logic can, my design I only modify end.)
+                                          :value-next-end (date-fns/addMinutes (.now js/Date) 25)
+
                                           :pomo-count 0
                                           :dev? (rf/subscribe [:dev?])}) ; Seems not reactive if I destructure here
 
+                     alarm-ref (reagent/atom nil)
+
+                     fn-play-alarm (fn [] (when-let [ref @alarm-ref]
+                                            (if (.-paused ref)
+                                              (.play ref)
+                                              (.pause ref))))
+
+                     fn-load-alarm (fn [] (when-let [ref @alarm-ref] ;; not nil?
+                                            (.load ref)))
+
                      timer-id (reagent/atom nil) ;setInterval id used to clear interval
 
-                     timer-fn     (fn [] (js/setInterval
-                                          (fn []
-                                            (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0) #_(.now js/Date))
-                                            (when (= 0 (date-fns/differenceInSeconds (get-in @state [:end]) (get-in @state [:start])))
-                                              (swap! state assoc-in [:finished?] true)))
-                                          70))]
+                     timer-fn (fn [] (js/setInterval
+                                      (fn []
+                                            ; Start will always be now. This will cause end - start calculation to change hence countdown (or countup). Based on this change calculation and conditions of app
+                                            ; it will cause app to react
+                                        (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))
+
+                                            ; When end-start = 0, trigger finished. This could be session or break. Sets next timer. This should only run when time is at 0.
+                                        (when (>= 0 (date-fns/differenceInSeconds (get-in @state [:end]) (get-in @state [:start])))
+                                          (if (get-in @state [:break?])
+                                            ((fn []
+                                                   ; Case break timer has reached zero. Need to setup system to star normal session timer.
+                                               (swap! state assoc-in [:finished?] false)
+                                               (swap! state assoc-in [:break?] false)
+                                               (fn-play-alarm)  ; freeCodecamp Requirement. Design decision. I want to trigger this through finished?. However I'll have to convert this to form-3 and sort after html has mounted. This is easier to do without converting.
+
+                                                 ; Set start to 0, end to break (default is 5). Working out difference in minute of what user inserted
+                                               (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))
+                                               (swap! state assoc-in [:end] (date-fns/addMinutes (.now js/Date)
+                                                                                                 (date-fns/differenceInMinutes (get-in @state [:value-next-end]) (get-in @state [:value-next-start]))))))
+
+                                            ((fn []
+                                                   ; Case finished session
+                                               (swap! state assoc-in [:finished?] true)
+                                               (swap! state assoc-in [:break?] true)
+                                               (fn-play-alarm)
+
+                                                 ; Set start to 0, end to break (default is 5). Working out difference in minute of what user inserted
+                                               (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))
+                                               (swap! state assoc-in [:end] (date-fns/addMinutes (.now js/Date)
+                                                                                                 (date-fns/differenceInMinutes (get-in @state [:value-break-end]) (get-in @state [:value-break-start]))))
+
+
+                                               ; Increase pomodoro count (for icon-array)
+                                               (swap! state update-in [:pomo-count] inc))))))
+                                      70))
+                     ; Resets 
+                     fn-reset (fn [e]
+                                (let [next-pomo-length (date-fns/differenceInMinutes (get-in @state [:value-next-end]) (get-in @state [:value-next-start]))]
+                                  (js/clearInterval @timer-id)
+                                  (swap! state assoc-in [:clean?] true)
+                                  (swap! state assoc-in [:running?] false)
+                                  (swap! state assoc-in [:finished?] false)
+                                  (swap! state assoc-in [:break?] false)
+
+                                  (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))  ; This needs to be reset to now.
+                                  ;; (swap! state assoc-in [:end] (date-fns/addMinutes (.now js/Date) next-pomo-length)) ;; My preferred logic. Insert this and remove freeCodeCamp Requirement below to revert back.
+
+                                  ;;;;;;;;;;;
+                                  ;; freeCodeCamp Requirement (temp  This logic is overriding my architecture "next-pomo-length")
+
+
+                                  ; Reset pomodoro length timer
+                                  (swap! state assoc-in [:value-next-start] (date-fns/addMinutes (.now js/Date) 0))  ; reset next timer to now. This logic is overriding my architecture "next-pomo-length"
+                                  (swap! state assoc-in [:value-next-end] (date-fns/addMinutes (.now js/Date) 25))  ; reset next timer to 25 minutes This logic is overriding my architecture "next-pomo-length"
+                                  (swap! state assoc-in [:end] (date-fns/addMinutes (.now js/Date) 25))  ; reset (force) next time to be 25 minutes. This logic is overriding my architecture "next-pomo-length"
+                                  ;;;;;;;;;;;
+
+                                  ; Reset break timer.
+                                  (swap! state assoc-in [:value-break-start] (date-fns/addMinutes (.now js/Date) 0))
+                                  (swap! state assoc-in [:value-break-end] (date-fns/addMinutes (.now js/Date) 5))
+
+                                  ; Rewind 'Load' alarm
+                                  (fn-load-alarm)
+
+                                  ; Reset Pomodoro count "icon-array". TODO: Disabled for now. Reload the age instead to reset fully
+                                  #_(swap! state assoc-in [:pomo-count] 0)))
+                     
+                     ;;  Initial Start
+                     fn-start (fn [e]
+                                (let [pomo-next-length (date-fns/differenceInMinutes (get-in @state [:value-next-end]) (get-in @state [:value-next-start]))]
+                                  (swap! state assoc-in [:clean?] false)
+                                  (swap! state assoc-in [:running?] true)
+                                  (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))
+                                  (swap! state assoc-in [:end] (date-fns/addMinutes (.now js/Date) pomo-next-length))
+                                  ; (swap! state assoc-in [:end] (date-fns/addSeconds (.now js/Date) 5)) ; *** Modify to change end time
+                                  (swap! timer-id timer-fn)))
+
+                     ; This function is not callable in button when inappropriate
+                     ; Calculation in millisecond as it can be paused at resumed in this scale
+                     fn-resume (fn [e]
+                                 (let [pomo-left-length (date-fns/differenceInMilliseconds (get-in @state [:end]) (get-in @state [:start]))]
+                                   (swap! state assoc-in [:clean?] false)
+                                   (swap! state assoc-in [:running?] true)
+                                   (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))
+                                   (swap! state assoc-in [:end] (date-fns/addMilliseconds (.now js/Date) pomo-left-length))
+                                   (swap! timer-id timer-fn)))
+
+                     fn-pause (fn [e]
+                                (js/clearInterval @timer-id)
+                                (swap! state assoc-in [:running?] false))]
+
     (let [compound-duration-all (diff-in-duration (get-in @state [:end]) (get-in @state [:start]))
           compound-duration-filtered (dissoc compound-duration-all :w :d :h)
           ms (when (get-in @state [:start?]) (mod (date-fns/differenceInMilliseconds (get-in @state [:end]) (get-in @state [:start])) 1000))
@@ -42,7 +151,15 @@
           compound-duration (cond
                               (get-in @state [:finished?]) {:m 0 :s 0 :ms 0}
                               (get-in @state [:start?]) compound-duration-plus-ms
-                              :else compound-duration-plus-ms)]
+                              :else compound-duration-plus-ms)
+
+          clean? (get-in @state [:clean?])
+          running? (get-in @state [:running?])
+          finished? (get-in @state [:finished?])
+          break? (get-in @state [:break?])
+
+          pomo-count (get-in @state [:pomo-count])]
+
       [:div.flex.flex-col.items-center.justify-center.content-center.self-center
        [:div.flex.flex-row.text-6xl.tracking-wide.leading-none.text-opacity-100.cursor-pointer.select-none
         {:on-click #(swap! state update-in [:ms-visible?] not)}
@@ -51,36 +168,37 @@
                               :ms-visible? (get-in @state [:ms-visible?])}]
         #_[:div.text-base.tracking-wide.leading-none.text-opacity-100.mt-2 ms]] ; I like side but it keeps changing, due to flex being responsive and fontsize being different. Maybe float or span?
        (when (get-in @state [:ms?]) [:div.text-base.tracking-wide.leading-none.text-opacity-100.mt-2 ms])
-       [:div.flex.flex-row.mt-5.text-xl
-        #_[:button.btn.btn-nav.mr-2 {:on-click (fn [e]
-                                                 (rf/dispatch [:dev/dev-switch]))}
-           "dev: " (pr-str @(rf/subscribe [:dev?]))]
-        [:button.btn.btn-nav {:on-click (fn [e]
-                                          (cond (get-in @state [:start?]) (js/clearInterval @timer-id) ; Stop Timer
-                                                (not (get-in @state [:start?])) (swap! timer-id timer-fn)) ; Start timer
-                                          (println "on-click after cond")
-                                          (swap! state update-in [:start?] not)
-                                          (swap! state assoc-in [:finished?] false)
-                                          (swap! state assoc-in [:start] (.now js/Date))
-                                          (swap! state assoc-in [:end] (date-fns/addMinutes (.now js/Date) 25)))}
-         (if (get-in @state [:start?]) "Stop" "Start")]]
+       [:div.flex.flex-row.mt-10.text-xl.transition-25to100.opacity-50
+        [:button#reset.btn.btn-nav.mr-8 {:on-click (fn [e] (fn-reset e))} "Reset"]
+        [:button#start_stop.btn.btn-nav {:on-click (fn [e] (if clean?
+                                                             (fn-start e)
+                                                             (if running? (fn-pause e) (fn-resume e))))
+                                         :disabled finished?
+                                         :class (when finished? "cursor-not-allowed opacity-50")}
+         (if clean?
+           "Start"
+           (if running? "Pause" "Resume"))]]
+       [vis/icon-array {:num pomo-count :class "mt-4 font-normal"}]
+       [:audio {:ref (fn [e] (reset! alarm-ref e))
+                :id "beep"
+                :preload "auto"
+                :src "/static/Baoding-balls-ding.mp3"
+                :controls false}]
        (when @(get-in @state [:dev?]) [dev-panel [state timer-id]])])
     (finally (js/clearInterval @timer-id))))
 
 
-; date-fns unlike moments does not have duration I can use. I have to caclculate time to get any duration
-; This mut be done since js interval are not safe and will go out of sync
 (defn pomodoro-simple--options []
-  (reagent/with-let [alarm-ref (reagent/atom nil)
-                     state (reagent/atom {; This will mutate to keep track of the time.
+  (reagent/with-let [state (reagent/atom {; For visual only. Automatically mutated in system.
                                           :start (date-fns/addMinutes (.now js/Date) 0)
                                           :end (date-fns/addMinutes (.now js/Date) 25)
 
                                           :ms-visible? false
                                           :ms-placement "bottom"  ; bottom, right, nil
 
+                                          ; Required due to user interactions
                                           :clean? true ; Inital state of running not have happened at all. E.g user interaction Clean
-                                          :running? false ; Timer running or not running
+                                          :running? false
                                           :finished? false ; Timer has finished (Reached 0). 
                                           :break? false; Tracking break
 
@@ -93,18 +211,19 @@
                                           :value-next-end (date-fns/addMinutes (.now js/Date) 25)
                                           ; :value-next-end (date-fns/addSeconds (.now js/Date) 3) ; *** Modify this to change end timer
 
-                                          
                                           :pomo-count 0
-                                          :dev? (rf/subscribe [:dev?])}) ; Seems not reactive if I destructure here
+                                          :dev? (rf/subscribe [:dev?])})
 
-                     fn-play-alarm (fn [] (when-let [ref @alarm-ref] ;; not nil?
+                     alarm-ref (reagent/atom nil)
+
+                     fn-play-alarm (fn [] (when-let [ref @alarm-ref]
                                             (if (.-paused ref)
                                               (.play ref)
                                               (.pause ref))))
-                     
-                     fn-pause-alarm (fn [] (when-let [ref @alarm-ref] ;; not nil?
+
+                     fn-load-alarm (fn [] (when-let [ref @alarm-ref] ;; not nil?
                                             (.load ref)))
-                     
+
                      ;; CSS
                      css-current-session-text (reagent/atom "invisible")
                      css-next-timer (reagent/atom "invisible")
@@ -148,7 +267,7 @@
                                                (swap! state assoc-in [:end] (date-fns/addMinutes (.now js/Date)
                                                                                                  (date-fns/differenceInMinutes (get-in @state [:value-break-end]) (get-in @state [:value-break-start]))))
                                                (animate-css-fade-fn css-current-session-text 3000)
-                                               
+
                                                ; Increase pomodoro count (for icon-array)
                                                (swap! state update-in [:pomo-count] inc))))))
                                       70))
@@ -178,14 +297,14 @@
                                   ; Reset break timer.
                                   (swap! state assoc-in [:value-break-start] (date-fns/addMinutes (.now js/Date) 0))
                                   (swap! state assoc-in [:value-break-end] (date-fns/addMinutes (.now js/Date) 5))
-                                  
+
                                   ; Rewind 'Load' alarm
-                                  (fn-pause-alarm)
+                                  (fn-load-alarm)
 
-                                  ; Reset Pomodoro count "icon-array"
-                                  (swap! state assoc-in [:pomo-count] 0)))
+                                  ; Reset Pomodoro count "icon-array". TODO: Disabled for now. Reload the age instead to reset fully
+                                  #_(swap! state assoc-in [:pomo-count] 0)))
 
-                    ;;  Initial Start
+                     ;;  Initial Start
                      fn-start (fn [e]
                                 (let [pomo-next-length (date-fns/differenceInMinutes (get-in @state [:value-next-end]) (get-in @state [:value-next-start]))]
                                   (swap! state assoc-in [:clean?] false)
@@ -228,7 +347,7 @@
           running? (get-in @state [:running?])
           finished? (get-in @state [:finished?])
           break? (get-in @state [:break?])
-          
+
           pomo-count (get-in @state [:pomo-count])
 
           ; Logic of which component duration to show. 
@@ -247,8 +366,8 @@
           ; For clicking logic. Sometimes click should trigger, sometimes not.
           next-timer-animate-fn-logic (if (or running? finished? (not clean?))
                                         (fn [] (animate-css-fade-fn css-next-timer 1200))
-                                        (fn [] nil))
-          ]
+                                        (fn [] nil))]
+
       [:div.flex.flex-col.items-center.justify-center.content-center.self-center
        ; Using centered allows this to stay mostly middle with temporary coming in and out. Possible for mobile this needs media query. Visible
        [:div.opacity-50.centered.animate__animated.animate__faster {:class @css-next-timer}  ; invisible as default stays in DOM if this converts into flex box.
