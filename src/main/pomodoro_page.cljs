@@ -8,6 +8,7 @@
    [util.dev :refer [dev-panel]]
    [component.timer :as clock]
    [component.input :as input]
+   [component.vis :as vis]
    [component.style :refer [btn-invalid fn-animate-css]]))
 
 ; TOOD: All time components - ms-placement "right", due to flexbox rule will keep adjusting, aka timer shaking right and left. Using bottom only for now.
@@ -21,6 +22,8 @@
 
                                           :start? false
                                           :finished? false
+                                          
+                                          :pomo-count 0
                                           :dev? (rf/subscribe [:dev?])}) ; Seems not reactive if I destructure here
 
                      timer-id (reagent/atom nil) ;setInterval id used to clear interval
@@ -87,7 +90,10 @@
                                           ;; for calculating next pomodoro length. 25 by default.
                                           :value-next-start (date-fns/addMinutes (.now js/Date) 0) ; Doesn't mutate in length calc logic (although logic can, my design I only modify end.)
                                           :value-next-end (date-fns/addMinutes (.now js/Date) 25)
+                                          ; :value-next-end (date-fns/addSeconds (.now js/Date) 3) ; *** Modify this to change end timer
 
+                                          
+                                          :pomo-count 0
                                           :dev? (rf/subscribe [:dev?])}) ; Seems not reactive if I destructure here
 
                      fn-play-alarm (fn [] (when-let [ref @alarm-ref] ;; not nil?
@@ -140,7 +146,10 @@
                                                (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))
                                                (swap! state assoc-in [:end] (date-fns/addMinutes (.now js/Date)
                                                                                                  (date-fns/differenceInMinutes (get-in @state [:value-break-end]) (get-in @state [:value-break-start]))))
-                                               (animate-css-fade-fn css-current-session-text 3000))))))
+                                               (animate-css-fade-fn css-current-session-text 3000)
+                                               
+                                               ; Increase pomodoro count (for icon-array)
+                                               (swap! state update-in [:pomo-count] inc))))))
                                       70))
 
                      ; Resets 
@@ -170,7 +179,10 @@
                                   (swap! state assoc-in [:value-break-end] (date-fns/addMinutes (.now js/Date) 5))
                                   
                                   ; Rewind 'Load' alarm
-                                  (fn-pause-alarm)))
+                                  (fn-pause-alarm)
+
+                                  ; Reset Pomodoro count "icon-array"
+                                  (swap! state assoc-in [:pomo-count] 0)))
 
                     ;;  Initial Start
                      fn-start (fn [e]
@@ -215,6 +227,8 @@
           running? (get-in @state [:running?])
           finished? (get-in @state [:finished?])
           break? (get-in @state [:break?])
+          
+          pomo-count (get-in @state [:pomo-count])
 
           ; Logic of which component duration to show. 
           display-compound-duration (reagent/atom (cond
@@ -305,9 +319,7 @@
          (if clean?
            "Start"
            (if running? "Pause" "Resume"))]]
-       #_[:button.btn.btn-nav.mt-2 {:on-click (fn [e]
-                                                (rf/dispatch [:dev/dev-switch]))}
-          "dev: " (pr-str @(rf/subscribe [:dev?]))]
+       [vis/icon-array {:num pomo-count :class "mt-4 font-normal"}] ; font-bold
        [:audio {:ref (fn [e] (reset! alarm-ref e))
                 :id "beep"
                 :preload "auto"
