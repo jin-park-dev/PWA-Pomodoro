@@ -3,10 +3,12 @@
    [reagent.core :as reagent]
    [re-frame.core :as rf]
    [state.subs :as sub]
+   [clojure.string :refer [join]]
    [date-fns :as date-fns]
    [util.time :refer [seconds->duration]]
    [util.dev :refer [dev-panel]]
-   [component.timer :as clock]))
+   [component.timer :as clock]
+   [component.input :as input]))
 
 
 (defn countup-component []
@@ -27,7 +29,9 @@
                                           :ms-placement "bottom"
                                           :dev? (rf/subscribe [:dev?])}) ; No button currently for dev?
                      timer-fn     (js/setInterval
-                                   #(swap! state assoc-in [:now] (.now js/Date)) 70)]  ;refreshed every 70ms. 1000ms = 1sec
+                                   #(swap! state assoc-in [:now] (.now js/Date)) 70)
+                     title-atom (reagent/atom nil)
+                     ]  ;refreshed every 70ms. 1000ms = 1sec
     (let [compound-duration-all (seconds->duration (date-fns/differenceInSeconds (get-in @state [:now]) (get-in @state [:start])))
           compound-duration-filtered (dissoc compound-duration-all :w :d)  ; Remove week, days. (Maybe add back if needed one day but it disables showing those two then.)
           ms (when (get-in @state [:start?]) (mod (date-fns/differenceInMilliseconds (get-in @state [:now]) (get-in @state [:start])) 1000))
@@ -35,6 +39,12 @@
           compound-duration (if (get-in @state [:start?]) compound-duration-plus-ms {:h 0 :m 0 :s 0 :ms 0})  ; Although component has default explictly choosing when on/off this way.
           ]
       [:div.flex.flex-col.items-center.justify-center.content-center.self-center
+       (let [class-bg @(rf/subscribe [:theme/general-bg 100])
+             hover (str "hover:" class-bg)
+             class (join  " " ["mb-3" "rounded" "bg-gray-100" hover])]
+         [input/title {:value @title-atom
+                       :class class
+                       :on-change (fn [e] (reset! title-atom (-> e .-target .-value)))}])
        [:div.flex.flex-row.text-6xl.tracking-wide.leading-none.text-opacity-100.cursor-pointer.select-none
         {:on-click #(swap! state update-in [:ms-visible?] not)}
         [clock/digital-clean {:compound-duration compound-duration

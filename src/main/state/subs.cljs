@@ -4,6 +4,11 @@
 
 
 (rf/reg-sub
+ :db
+ (fn [db]
+   db))
+
+(rf/reg-sub
  :name
  (fn [db]
    (:name db)))
@@ -34,6 +39,13 @@
    (rf/subscribe [:theme/general]))
  (fn [color [_ _lvl]]
    (str "text-" color "-" _lvl)))
+
+(rf/reg-sub
+ :theme/general-bg
+ (fn []
+   (rf/subscribe [:theme/general]))
+ (fn [color [_ _lvl]]
+   (str "bg-" color "-" _lvl)))
 
 
 (comment

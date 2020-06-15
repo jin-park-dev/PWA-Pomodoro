@@ -12,6 +12,13 @@
 
 ;; (def theme-actions (map (fn [color] (keyword color)) theme-colors))
 
+(defn save-to-localhost []
+  [:div
+   (js/console.log @(rf/subscribe [:db]))
+   (js/console.log (pr-str @(rf/subscribe [:db])))
+   (pr-str @(rf/subscribe [:db]))
+   [:button "Save"]])
+
 (defn index-panel []
   (let [css-h1-intro (if @(rf/subscribe [:index-initial?])
                        (reagent/atom "animate__flipInX")
@@ -27,6 +34,7 @@
         [:p "Powered by Progressive Web App"]]
        [:> Link {:to "pomodoro" :class "my-5"} [:button.btn.btn-nav "Start"]]
        [theme/picker theme-colors]
+       #_[save-to-localhost]
        (when @(rf/subscribe [:dev?]) [dev-panel [css-h1-intro]])])))
 
 (defn index-page-container []

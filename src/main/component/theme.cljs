@@ -17,10 +17,10 @@
                        (str "bg-" color "-500")
                        (str "bg-" color "-400")
                        )]
-        (js/console.log "@subscription theme/general-text: " @(rf/subscribe [:theme/general-text 500]))
-        (js/console.log "bg-color: " bg-color)
-        (js/console.log "hover:bg-color: " hover:bg-color)
-        (js/console.log "color: " color)
+        ; (js/console.log "@subscription theme/general-text: " @(rf/subscribe [:theme/general-text 500]))
+        ; (js/console.log "bg-color: " bg-color)
+        ; (js/console.log "hover:bg-color: " hover:bg-color)
+        ; (js/console.log "color: " color)
         ^{:key color} [:button.py-3.px-3.outline-none.focus:shadow-outline.text-white.rounded.mx-1
                        {:on-click (fn [e] (rf/dispatch [:theme/set-text-color color])
                                     )

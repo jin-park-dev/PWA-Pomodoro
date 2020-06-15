@@ -31,6 +31,21 @@
      [:button.btn.btn-nav (merge {:id id+button} on+click)
       "+"]]))
 
+(defn title
+  "Title for timers"
+  [{:keys [value class on-change]
+    :or {value nil
+         class nil
+         on-change nil}}]
+  ;.bg-gray-200.hover:bg-teal-200   .hover:border-teal-300.focus:outline-none.focus:bg-teal-500.focus:shadow-outline.focus:border-gray-300
+  [:input.text-center {:type "text"
+                       :value value
+                       :class class
+                       :on-change on-change
+                       :on-key-press
+                       (fn [e]
+                         (when (= (.-key e) "Enter")
+                           (-> e .-target .blur)))}])
 
 
      
