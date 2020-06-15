@@ -40,8 +40,9 @@
           ]
       [:div.flex.flex-col.items-center.justify-center.content-center.self-center
        (let [class-bg @(rf/subscribe [:theme/general-bg 100])
+             class-text @(rf/subscribe [:theme/general-text 400])
              hover (str "hover:" class-bg)
-             class (join  " " ["mb-3" "rounded" "bg-gray-100" hover])]
+             class (join  " " ["mb-3" "rounded" #_"bg-gray-100" hover class-text])]
          [input/title {:value @title-atom
                        :class class
                        :on-change (fn [e] (reset! title-atom (-> e .-target .-value)))}])

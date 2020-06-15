@@ -2,6 +2,7 @@
   (:require
    [reagent.core :as reagent]
    [re-frame.core :as rf]
+   [clojure.string :refer [join]]
    [date-fns :as date-fns]
    ["react-tooltip" :as ReactTooltip]
    [util.time :refer [diff-in-duration humanize-double-digit]]
@@ -141,7 +142,9 @@
 
                      fn-pause (fn [e]
                                 (js/clearInterval @timer-id)
-                                (swap! state assoc-in [:running?] false))]
+                                (swap! state assoc-in [:running?] false))
+
+                     title-atom (reagent/atom nil)]
 
     (let [compound-duration-all (diff-in-duration (get-in @state [:end]) (get-in @state [:start]))
           compound-duration-filtered (dissoc compound-duration-all :w :d :h)
@@ -161,6 +164,13 @@
           pomo-count (get-in @state [:pomo-count])]
 
       [:div.flex.flex-col.items-center.justify-center.content-center.self-center
+       (let [class-bg @(rf/subscribe [:theme/general-bg 100])
+             class-text @(rf/subscribe [:theme/general-text 400])
+             hover (str "hover:" class-bg)
+             class (join  " " ["mb-3" "rounded" hover class-text])]
+         [input/title {:value @title-atom
+                       :class class
+                       :on-change (fn [e] (reset! title-atom (-> e .-target .-value)))}])
        [:div.flex.flex-row.text-6xl.tracking-wide.leading-none.text-opacity-100.cursor-pointer.select-none
         {:on-click #(swap! state update-in [:ms-visible?] not)}
         [clock/digital-clean {:compound-duration compound-duration
@@ -326,7 +336,9 @@
 
                      fn-pause (fn [e]
                                 (js/clearInterval @timer-id)
-                                (swap! state assoc-in [:running?] false))]
+                                (swap! state assoc-in [:running?] false))
+                     
+                     title-atom (reagent/atom nil)]
 
     (let [; Currently running
           compound-duration-all (diff-in-duration (get-in @state [:end]) (get-in @state [:start])) #_(seconds->duration (date-fns/differenceInSeconds (get-in @state [:end]) (get-in @state [:start])))
@@ -370,6 +382,13 @@
 
       [:div.flex.flex-col.items-center.justify-center.content-center.self-center
        ; Using centered allows this to stay mostly middle with temporary coming in and out. Possible for mobile this needs media query. Visible
+       (let [class-bg @(rf/subscribe [:theme/general-bg 100])
+             class-text @(rf/subscribe [:theme/general-text 400])
+             hover (str "hover:" class-bg)
+             class (join  " " ["mb-3" "rounded" #_"bg-gray-100" hover class-text])]
+         [input/title {:value @title-atom
+                       :class class
+                       :on-change (fn [e] (reset! title-atom (-> e .-target .-value)))}])
        [:div.opacity-50.centered.animate__animated.animate__faster {:class @css-next-timer}  ; invisible as default stays in DOM if this converts into flex box.
         ;; [clock/digital-clean {:compound-duration {:h 0 :m next-pomo-length :s 0 :ms 0}}]
         [clock/digital-clean {:compound-duration {:m next-pomo-length}}]]
