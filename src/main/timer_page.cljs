@@ -61,8 +61,16 @@
     (finally (js/clearInterval timer-fn))))
 
 (defn timer-panel-nav []
+  ; below is non-used attempt to auto add. User can press + and it will add new component (without destorying older)
+  #_[:div.flex-center
+   (doall
+    (for [i (range 7)]
+      [:div {:class "w-1/3"}
+       [timer-simple]]))
+   ]
   [:div.flex-center.h-full
-   [timer-simple]])
+   [timer-simple]]
+  )
 
 (defn timer-page-container []
   [:main [timer-panel-nav]])
