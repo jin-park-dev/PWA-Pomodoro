@@ -32,7 +32,9 @@ Possible to refactor
 Inital Entering Hi Nice page with item in center only?
 Navbar hide with ----\/----- for full app-like ui?
 
-Reframe to keep theme, or some other info to be shared between switching of pages?
+TailwindCSS - Purge CSS to drop size. However not worth the effort. (Gzip 144.6kb, Brotli 37kb - cloudflare)
+Purge CSS work with html/JSX. Due to going outside of non-common usage I'd have to generate HTML for all the pages and get purge CSS to do the work. Too much work for almost non-noticeable change for modern western world.
+
 
 
 ### Improve build
