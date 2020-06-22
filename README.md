@@ -1,40 +1,59 @@
 # PomoTimer++
 
+LIVE! - https://pomo.kanxdoro.com
+
+Pomodoro Timer with few other timer utilities.
 PWA-Pomodoro is progressive web app installable on Android, iOS, Desktop. Built with ClojureScript, Reagent, Re-frame, Google Workbox, Tailwind CSS.
 
-## GOTCHA!
+## Getting Started
+
+### Requirements
+
+Require [Shadow-cljs](https://shadow-cljs.org/), [ClojureScript](https://clojure.org/guides/getting_started) and [node-js](https://nodejs.org/en/). Follow documentation to get it on your system first.
+
+### Development
+
+This will get the app running on locally on http://localhost:9105
+(May need to add in ~/.shadow-cljs cider-nrepl as dependency)
+
+```
+$ npm install
+```
+
+```
+$ npm start
+```
+
+Development server - http://localhost:9105
+Dashboard for build - http://localhost:9103/dashboard
+
+Check package.json for more details.
+
+### Deployment
+
+Run `npm run build` and `./publish-master.sh`
+
+Build will create all files under one folder.
+Reference Ony - Publish will deploy to private server.
+
+#### Deployment Cloudflare GOTCHA!
 
 Don't forgot cloudflare has caching in front. If changes doesn't happen in deploy "Development Mode" might need to be turned on to bypass cloudflare cache.
 
+## New to ClojureScript
 
-## DEV Info
-TEMP
+Simple version for people who are familar with javascript, react, redux, webpack
 
+JavaScript = Clojurescript
+Webpack = Shadow-CLJS
+React = Reagent
+Redux = Re-frame
 
-Output location - $ shadow-cljs release app --config-merge '{:output-dir "somewhere/else"}'
+Doing same things in ClojureScript (mostly) instead of node eco system.
 
-7.6.1. Release Versions
-shadow-cljs release app --config-merge '{:release-version "v1"}'
+## Todo More
 
-Pushing out old cache javascript issue
-7.6.2. Filenames with Fingerprint-Hash
-
-Output Manifest? Can it be useful?
-
-Calva cider-nrepl setup?
-https://shadow-cljs.github.io/docs/UsersGuide.html#_dependencies_2
-
-## ToDO More
-
-Theme? (Clean / Neon)
-Pulling out Main body container?
 full screen timer?
-
-Possible to refactor
-    Timer output part only? (UI part only)
-    Function shared between timer
-
-Inital Entering Hi Nice page with item in center only?
 Navbar hide with ----\/----- for full app-like ui?
 
 
@@ -191,100 +210,6 @@ Purge CSS work with html/JSX. Due to going outside of non-common usage I'd have 
 See https://shadow-cljs.github.io/docs/UsersGuide.html#_using_npm_packages
 For full table of examples.
 
-
-### Useful commands
-
-`shadow-cljs watch app`
-
-
 ### Links
 
 Following HTML5 Standard strictly - https://html.spec.whatwg.org/multipage/ https://www.html5tutorial.info 
-
-
-## Getting Started
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
-
-
-### Prerequisites
-
-What things you need to install the software and how to install them
-
-```
-Give examples
-```
-
-### Installing
-
-This will get the app running on locally on http://localhost:9105
-(May need to add in ~/.shadow-cljs cider-nrepl as dependency)
-
-```
-$ npm install
-```
-
-And repeat
-
-```
-$ npm start
-```
-
-Development server - http://localhost:9105
-Dashboard for build - http://localhost:9103/dashboard
-
-Check package.json for more details.
-
-## Running the tests
-
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
-
-## Built With
-
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
-
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
-
-## Authors
-
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-## Acknowledgments
-
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
