@@ -2,6 +2,7 @@ node_modules/
 public/js
 .vscode
 .clj-kondo/.cache/*
+dev/*
 
 /target
 /checkouts
