@@ -5,6 +5,7 @@
    [util.dev :refer [dev-panel]]
    [component.style :refer [fn-animate-css]]
    [component.theme :as theme]
+   [component.icon :as icon]
    [state.index]
    [state.db :refer [theme-colors]]
    ["react-router-dom" :refer (Link)]))
@@ -32,7 +33,8 @@
        [:div.text-center
         [:p "Simple no nonsense Pomodoro Timer"]
         [:p "Powered by Progressive Web App"]]
-       [:> Link {:to "pomodoro" :class "my-5"} [:button.btn.btn-nav "Start"]]
+       [:> Link {:to "pomodoro" :class "my-5" :style {:color "inherit"}}
+        [:button.btn.btn-nav "Start"]]
        [theme/picker theme-colors]
        #_[save-to-localhost]
        (when @(rf/subscribe [:dev?]) [dev-panel [css-h1-intro]])])))

@@ -8,7 +8,9 @@
    [util.time :refer [seconds->duration]]
    [util.dev :refer [dev-panel]]
    [component.timer :as clock]
-   [component.input :as input]))
+   [component.input :as input]
+   [component.icon :as icon]
+   ))
 
 
 (defn countup-component []
@@ -56,7 +58,7 @@
         [:button.btn.btn-nav {:on-click (fn [e]
                                           (swap! state update-in [:start?] not)
                                           (swap! state assoc-in [:start] (.now js/Date)))}
-         (if (get-in @state [:start?]) "Restart" "Start")]]
+         (if (get-in @state [:start?]) [icon/stop] [icon/play])]]
        (when @(get-in @state [:dev?]) [dev-panel [state]])])
     (finally (js/clearInterval timer-fn))))
 

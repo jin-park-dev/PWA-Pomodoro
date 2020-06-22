@@ -9,6 +9,7 @@
    [util.dev :refer [dev-panel]]
    [component.timer :as clock]
    [component.input :as input]
+   [component.icon :as icon]
    [component.vis :as vis]
    [component.style :refer [btn-invalid fn-animate-css]]))
 
@@ -179,15 +180,15 @@
         #_[:div.text-base.tracking-wide.leading-none.text-opacity-100.mt-2 ms]] ; I like side but it keeps changing, due to flex being responsive and fontsize being different. Maybe float or span?
        (when (get-in @state [:ms?]) [:div.text-base.tracking-wide.leading-none.text-opacity-100.mt-2 ms])
        [:div.flex.flex-row.mt-10.text-xl.transition-25to100.opacity-50
-        [:button#reset.btn.btn-nav.mr-8 {:on-click (fn [e] (fn-reset e))} "Reset"]
+        [:button#reset.btn.btn-nav.mr-8 {:on-click (fn [e] (fn-reset e))} [icon/stop]]
         [:button#start_stop.btn.btn-nav {:on-click (fn [e] (if clean?
                                                              (fn-start e)
                                                              (if running? (fn-pause e) (fn-resume e))))
                                          :disabled finished?
                                          :class (when finished? "cursor-not-allowed opacity-50")}
          (if clean?
-           "Start"
-           (if running? "Pause" "Resume"))]]
+           [icon/play]
+           (if running? [icon/pause] [icon/play]))]]
        [vis/icon-array {:num pomo-count :class "mt-4 font-normal"}]
        [:audio {:ref (fn [e] (reset! alarm-ref e))
                 :id "beep"
@@ -449,15 +450,15 @@
          "+"]]
        (when (get-in @state [:ms?]) [:div.text-base.tracking-wide.leading-none.text-opacity-100.mt-2 ms])
        [:div.flex.flex-row.mt-10.text-xl.transition-25to100.opacity-50
-        [:button#reset.btn.btn-nav.mr-8 {:on-click (fn [e] (fn-reset e))} "Reset"]
+        [:button#reset.btn.btn-nav.mr-8 {:on-click (fn [e] (fn-reset e))} [icon/stop]]
         [:button#start_stop.btn.btn-nav {:on-click (fn [e] (if clean?
                                                              (fn-start e)
                                                              (if running? (fn-pause e) (fn-resume e))))
                                          :disabled finished?
                                          :class (when finished? "cursor-not-allowed opacity-50")}
          (if clean?
-           "Start"
-           (if running? "Pause" "Resume"))]]
+           [icon/play]
+           (if running? [icon/pause] [icon/play]))]]
        [vis/icon-array {:num pomo-count :class "mt-4 font-normal"}] ; font-bold
        [:audio {:ref (fn [e] (reset! alarm-ref e))
                 :id "beep"

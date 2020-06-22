@@ -75,12 +75,12 @@ nav {
 
 /* Button */
 
+/* rounded-full VS rounded. Temp: Trying out round-full. Might need to pull it out for some buttons only */
 .btn {
-    @apply font-bold py-2 px-4 rounded;
+    @apply font-bold py-2 px-4 rounded-full;
   }
-
 .btn-nav {
-    @apply bg-white text-gray-800 font-semibold border border-gray-400 rounded shadow;
+    @apply bg-white font-semibold border border-gray-400 shadow;
 }
 .btn-nav:hover {
     @apply bg-gray-100;
