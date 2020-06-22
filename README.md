@@ -1,6 +1,11 @@
 # PomoTimer++
 
-One Paragraph of project description goes here
+PWA-Pomodoro is progressive web app installable on Android, iOS, Desktop. Built with ClojureScript, Reagent, Re-frame, Google Workbox, Tailwind CSS.
+
+## GOTCHA!
+
+Don't forgot cloudflare has caching in front. If changes doesn't happen in deploy "Development Mode" might need to be turned on to bypass cloudflare cache.
+
 
 ## DEV Info
 TEMP
