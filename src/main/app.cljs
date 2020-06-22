@@ -24,7 +24,7 @@
 
 (defn root []
   [:> BrowserRouter
-   [:div.grid-style {:class @(rf/subscribe [:theme/general-text 500])}
+   [:div.grid-style.font-body {:class @(rf/subscribe [:theme/general-text 500])}
     [:nav
      [:ul.nav-container
       [:li.mr-2.sm:mr-6
