@@ -1,4 +1,4 @@
-# PomoTimer++
+# PWA-PomoTimer++
 
 LIVE! - https://pomo.kanxdoro.com
 
