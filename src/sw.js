@@ -11,16 +11,15 @@ if (workbox) {
   console.log(`Workbox is loaded 🎉`);
 
   // Workbox will automatically avoid the browser's HTTP cache if there is out-of-band revision information provided for a given entry in the precache manifest—it uses that as a signal that the contents of the URL might change over time.
-  precacheAndRoute(self.__WB_MANIFEST,
-    //  {cleanUrls: false,}
-     );
+  precacheAndRoute(self.__WB_MANIFEST);
 
   // External resources pulled in HTML Head
   registerRoute(
     ({ url }) =>
       url.origin === "https://cdnjs.cloudflare.com" ||
       url.origin === "https://fonts.googleapis.com" ||
-      url.origin === "https://fonts.gstatic.com",
+      url.origin === "https://fonts.gstatic.com" ||
+      url.origin === "https://maxst.icons8.com",
     new StaleWhileRevalidate({
       cacheName: "pomo-static-external",
     })

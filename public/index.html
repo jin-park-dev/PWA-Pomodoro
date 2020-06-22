@@ -5,22 +5,34 @@
     <title>PWA Pomo</title>
 
     <!-- PWA -->
-    <link rel="manifest" href="manifest.json">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Pomodoro+">
-    <meta name="apple-mobile-web-app-title" content="Pomodoro+">
-    <meta name="theme-color" content="#ff6961">
-    <meta name="msapplication-navbutton-color" content="#ff6961">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="msapplication-starturl" content="/">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="icon" sizes="192x192" href="static/icons/icon-192x192.png">
-    <link rel="apple-touch-icon" sizes="192x192" href="static/icons/icon-192x192.png">
-    <link rel="icon" sizes="512x512" href="static/icons/icon-512x512.png">
-    <link rel="apple-touch-icon" sizes="512x512" href="static/icons/icon-512x512.png">
-
-
+    <link rel="manifest" href="manifest.json" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="Pomodoro+" />
+    <meta name="apple-mobile-web-app-title" content="Pomodoro+" />
+    <meta name="theme-color" content="#ff6961" />
+    <meta name="msapplication-navbutton-color" content="#ff6961" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="msapplication-starturl" content="/" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <link rel="icon" sizes="192x192" href="static/icons/icon-192x192.png" />
+    <link
+      rel="apple-touch-icon"
+      sizes="192x192"
+      href="static/icons/icon-192x192.png"
+    />
+    <link rel="icon" sizes="512x512" href="static/icons/icon-512x512.png" />
+    <link
+      rel="apple-touch-icon"
+      sizes="512x512"
+      href="static/icons/icon-512x512.png"
+    />
     <link
       href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap"
       rel="stylesheet"
@@ -28,6 +40,10 @@
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.0.0/animate.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css"
     />
     <link
       rel="stylesheet"
@@ -58,7 +74,9 @@
               );
             })
             .catch((err) => {
-              console.log(`Service Worker registration failed (Normal in dev): ${err}`);
+              console.log(
+                `Service Worker registration failed (Normal in dev): ${err}`
+              );
             });
         });
       }
