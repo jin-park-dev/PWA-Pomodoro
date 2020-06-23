@@ -149,12 +149,12 @@
 
     (let [compound-duration-all (diff-in-duration (get-in @state [:end]) (get-in @state [:start]))
           compound-duration-filtered (dissoc compound-duration-all :w :d :h)
-          ms (when (get-in @state [:start?]) (mod (date-fns/differenceInMilliseconds (get-in @state [:end]) (get-in @state [:start])) 1000))
+          ms (when (get-in @state [:running?]) (mod (date-fns/differenceInMilliseconds (get-in @state [:end]) (get-in @state [:start])) 1000))
           compound-duration-plus-ms (assoc compound-duration-filtered :ms ms)
           ; compound-duration contains logic for what shows up inside of main timer.
           compound-duration (cond
                               (get-in @state [:finished?]) {:m 0 :s 0 :ms 0}
-                              (get-in @state [:start?]) compound-duration-plus-ms
+                              (get-in @state [:running?]) compound-duration-plus-ms
                               :else compound-duration-plus-ms)
 
           clean? (get-in @state [:clean?])

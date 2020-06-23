@@ -5,7 +5,7 @@
    [state.subs :as sub]
    [clojure.string :refer [join]]
    [date-fns :as date-fns]
-   [util.time :refer [seconds->duration]]
+   [util.time :refer [seconds->duration diff-in-duration]]
    [util.dev :refer [dev-panel]]
    [component.timer :as clock]
    [component.input :as input]
@@ -13,32 +13,73 @@
    ))
 
 
-(defn countup-component []
-  (reagent/with-let [seconds-left (reagent/atom 60)
-                     timer-fn     (js/setInterval #(swap! seconds-left inc) 1000)
-                     state {:start nil
-                            :now nil}]
-    [:div.timer [:div "Time Remaining: " (str @seconds-left)]]
-    (finally (js/clearInterval timer-fn))))
-
 ; TODO: can't put "compound-duration" above in with-let. Atom seems to not get evalutated so need second let? Or anther way?
 ; TODO: More control on which unit time when shown. But do I really need days?
 (defn timer-simple []
   (reagent/with-let [state (reagent/atom {:start (.now js/Date)
                                           :now (.now js/Date)
+                                          :running-length 0 ; diff in seconds
+
                                           :start? false
+                                          :clean? true ; Inital state of running not have happened at all. E.g user interaction Clean
+                                          :running? false
+
                                           :ms-visible? false
                                           :ms-placement "bottom"
                                           :dev? (rf/subscribe [:dev?])}) ; No button currently for dev?
-                     timer-fn     (js/setInterval
-                                   #(swap! state assoc-in [:now] (.now js/Date)) 70)
+                     timer-fn     (fn [] (js/setInterval
+                                          (fn []
+                                            ; (js/console.log "hello from timer-fn")
+                                            (swap! state assoc-in [:now] (.now js/Date))) 1000))
+
+                    ;  timer-fn     (js/setInterval
+                    ;                #(swap! state assoc-in [:now] (.now js/Date)) 70)
+
                      title-atom (reagent/atom nil)
+                     timer-id (reagent/atom nil)
+
+                     ;;  Initial Start
+                     fn-start (fn [e]
+                                (let [
+                                      ; pomo-next-length (date-fns/differenceInMinutes (get-in @state [:value-next-end]) (get-in @state [:value-next-start]))
+                                      ]
+                                  ; (js/console.log "hello from fn-start")
+                                  (swap! state assoc-in [:clean?] false)
+                                  (swap! state assoc-in [:running?] true)
+                                  (swap! state assoc-in [:now] (.now js/Date))
+                                  (swap! state assoc-in [:start] (.now js/Date))
+                                  (swap! timer-id timer-fn)))
+
+                     fn-reset (fn [e]
+                                (js/clearInterval @timer-id)
+                                (swap! state assoc-in [:clean?] true)
+                                (swap! state assoc-in [:running?] false)
+                                (swap! state assoc-in [:start] (.now js/Date))
+                                (swap! state assoc-in [:end] (.now js/Date))
+                                )
+
+                     fn-resume (fn [e]
+                                 (let [
+                                      ;  pomo-left-length (date-fns/differenceInMilliseconds (get-in @state [:end]) (get-in @state [:start]))
+                                       ]
+                                   (swap! state assoc-in [:clean?] false)
+                                   (swap! state assoc-in [:running?] true)
+                                   (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))
+                                   (swap! timer-id timer-fn)))
+
+                     fn-pause (fn [e]
+                                (js/clearInterval @timer-id)
+                                (swap! state assoc-in [:running?] false))
+                     
                      ]  ;refreshed every 70ms. 1000ms = 1sec
-    (let [compound-duration-all (seconds->duration (date-fns/differenceInSeconds (get-in @state [:now]) (get-in @state [:start])))
+    (let [compound-duration-all (diff-in-duration (get-in @state [:now]) (get-in @state [:start]))
           compound-duration-filtered (dissoc compound-duration-all :w :d)  ; Remove week, days. (Maybe add back if needed one day but it disables showing those two then.)
-          ms (when (get-in @state [:start?]) (mod (date-fns/differenceInMilliseconds (get-in @state [:now]) (get-in @state [:start])) 1000))
+          ms (when (get-in @state [:running?]) (mod (date-fns/differenceInMilliseconds (get-in @state [:now]) (get-in @state [:start])) 1000))
           compound-duration-plus-ms (assoc compound-duration-filtered :ms ms)
-          compound-duration (if (get-in @state [:start?]) compound-duration-plus-ms {:h 0 :m 0 :s 0 :ms 0})  ; Although component has default explictly choosing when on/off this way.
+          compound-duration (if (get-in @state [:running?]) compound-duration-plus-ms {:h 0 :m 0 :s 0 :ms 0})  ; Although component has default explictly choosing when on/off this way.
+          
+          clean? (get-in @state [:clean?])
+          running? (get-in @state [:running?])
           ]
       [:div.flex.flex-col.items-center.justify-center.content-center.self-center
        (let [class-bg @(rf/subscribe [:theme/general-bg 100])
@@ -50,15 +91,27 @@
                        :on-change (fn [e] (reset! title-atom (-> e .-target .-value)))}])
        [:div.flex.flex-row.text-6xl.tracking-wide.leading-none.text-opacity-100.cursor-pointer.select-none
         {:on-click #(swap! state update-in [:ms-visible?] not)}
+        
         [clock/digital-clean {:compound-duration compound-duration
                               :ms-placement (get-in @state [:ms-placement])
                               :ms-visible? (get-in @state [:ms-visible?])}]]
-       [:div.flex.flex-row.mt-5.text-xl
-        #_[:button.btn.btn-nav.mr-2 {:on-click #(swap! state assoc-in [:start] (.now js/Date))} "Reset"] ;; Pause requires time adding/removing everytime pause is pressed. Lets keep simple for now. so 1 button
-        [:button.btn.btn-nav {:on-click (fn [e]
-                                          (swap! state update-in [:start?] not)
-                                          (swap! state assoc-in [:start] (.now js/Date)))}
-         (if (get-in @state [:start?]) [icon/stop] [icon/play])]]
+       
+       [:div.flex.flex-row.mt-10.text-xl.transition-25to100.opacity-50
+        [:button#reset.btn.btn-nav.mr-8 {:on-click (fn [e] (fn-reset e))} [icon/stop]]
+        [:button.btn.btn-nav {:on-click (fn [e] (if clean?
+                                                  (fn-start e)
+                                                  (if running? (fn-pause e) (fn-resume e))))}
+         (if (get-in @state [:running?]) [icon/pause] [icon/play])]
+        
+        #_[:button#start_stop.btn.btn-nav {:on-click (fn [e] (if clean?
+                                                             (fn-start e)
+                                                             (if running? (fn-pause e) (fn-resume e))))
+                                         :disabled finished?
+                                         :class (when finished? "cursor-not-allowed opacity-50")}
+         (if clean?
+           [icon/play]
+           (if running? [icon/pause] [icon/play]))]]
+       
        (when @(get-in @state [:dev?]) [dev-panel [state]])])
     (finally (js/clearInterval timer-fn))))
 
