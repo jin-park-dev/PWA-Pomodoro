@@ -28,7 +28,7 @@
                                           (fn []
                                             (swap! state assoc-in [:now] (.now js/Date))) 70))
 
-                     pauses-sum (fn [] (reduce + (get-in @state [:pauses])))  ; in seconds
+                     sum (fn [coll] (reduce + coll))  ; in seconds
 
 
                      title-atom (reagent/atom nil)
@@ -63,8 +63,9 @@
                                   (swap! state assoc-in [:running?] false)
                                   (swap! state assoc-in [:start] (.now js/Date))))]  ;refreshed every 70ms. 1000ms = 1sec
     
-    (let [duration-diff (date-fns/differenceInSeconds (get-in @state [:now]) (get-in @state [:start]))
-          duration-diff-adjusted (+ duration-diff (pauses-sum))
+    (let [pauses-sum (sum (get-in @state [:pauses]))
+          duration-diff (date-fns/differenceInSeconds (get-in @state [:now]) (get-in @state [:start]))
+          duration-diff-adjusted (+ duration-diff pauses-sum)
           compound-duration-all (seconds->duration duration-diff-adjusted)
           compound-duration-filtered (dissoc compound-duration-all :w :d)  ; Remove week, days. (Maybe add back if needed one day but it disables showing those two then.)
           ms (when (get-in @state [:running?]) (mod (date-fns/differenceInMilliseconds (get-in @state [:now]) (get-in @state [:start])) 1000))
@@ -78,6 +79,8 @@
                               :else compound-duration-plus-ms
                               
                               )  ; Although component has default explictly choosing when on/off this way.
+          
+          previous-pause-length (sum (drop-last 1 (get-in @state [:pauses])))
           
           ]
       [:div.flex.flex-col.items-center.justify-center.content-center.self-center
@@ -99,19 +102,11 @@
         [:button.btn.btn-nav {:on-click (fn [e] (if clean?
                                                   (fn-start e)
                                                   (if running? (fn-pause e) (fn-resume e))))}
-         (if (get-in @state [:running?]) [icon/pause] [icon/play])]
-        
-        #_[:button#start_stop.btn.btn-nav {:on-click (fn [e] (if clean?
-                                                             (fn-start e)
-                                                             (if running? (fn-pause e) (fn-resume e))))
-                                         :disabled finished?
-                                         :class (when finished? "cursor-not-allowed opacity-50")}
-         (if clean?
-           [icon/play]
-           (if running? [icon/pause] [icon/play]))]]
-       (when (not clean?)
+         (if (get-in @state [:running?]) [icon/pause] [icon/play])]]
+       
+       (when true #_(not clean?)
          [:div.mt-5
-          [:div "Total: " (pauses-sum)]
+          [:div.self-center "Last: " previous-pause-length]
           [:div "Previous pauses: " (into [:div ] (map (fn [p] [:div p]) (get-in @state [:pauses])))]])
        
        (when @(get-in @state [:dev?]) [dev-panel [state]])])
