@@ -16,7 +16,7 @@
 (defn timer-simple []
   (reagent/with-let [state (reagent/atom {:start (.now js/Date)
                                           :now (.now js/Date)
-                                          :running-length 0 ; diff in seconds
+                                          :pauses nil ; diff in seconds as vector
 
                                           :clean? true ; Inital state of running not have happened at all. E.g user interaction Clean
                                           :running? false
@@ -26,11 +26,10 @@
                                           :dev? (rf/subscribe [:dev?])}) ; No button currently for dev?
                      timer-fn     (fn [] (js/setInterval
                                           (fn []
-                                            (js/console.log "hello from timer-fn")
                                             (swap! state assoc-in [:now] (.now js/Date))) 70))
 
-                    ;  timer-fn     (js/setInterval
-                    ;                #(swap! state assoc-in [:now] (.now js/Date)) 70)
+                     pauses-sum (fn [] (reduce + (get-in @state [:pauses])))  ; in seconds
+
 
                      title-atom (reagent/atom nil)
                      timer-id (reagent/atom nil)
@@ -47,20 +46,26 @@
                                 (js/clearInterval @timer-id)
                                 (swap! state assoc-in [:clean?] true)
                                 (swap! state assoc-in [:running?] false)
+                                (swap! state assoc-in [:pauses] nil)
                                 (swap! state assoc-in [:start] (.now js/Date))
                                 (swap! state assoc-in [:end] (.now js/Date)))
 
                      fn-resume (fn [e]
-                                 (let [;  pomo-left-length (date-fns/differenceInMilliseconds (get-in @state [:end]) (get-in @state [:start]))
-                                       ]
-                                   (swap! state assoc-in [:running?] true)
-                                   (swap! state assoc-in [:start] (date-fns/addMinutes (.now js/Date) 0))
-                                   (swap! timer-id timer-fn)))
+                                 (swap! state assoc-in [:running?] true)
+                                 (swap! state assoc-in [:start] (.now js/Date))
+                                 (swap! state assoc-in [:now] (.now js/Date)) ; need, to stop flicking from timer-fn
+                                 (swap! timer-id timer-fn))
 
                      fn-pause (fn [e]
-                                (js/clearInterval @timer-id)
-                                (swap! state assoc-in [:running?] false))]  ;refreshed every 70ms. 1000ms = 1sec
-    (let [compound-duration-all (diff-in-duration (get-in @state [:now]) (get-in @state [:start]))
+                                (let [current-length (date-fns/differenceInSeconds (get-in @state [:now]) (get-in @state [:start]))]
+                                  (js/clearInterval @timer-id)
+                                  (swap! state update-in [:pauses] conj current-length)
+                                  (swap! state assoc-in [:running?] false)
+                                  (swap! state assoc-in [:start] (.now js/Date))))]  ;refreshed every 70ms. 1000ms = 1sec
+    
+    (let [duration-diff (date-fns/differenceInSeconds (get-in @state [:now]) (get-in @state [:start]))
+          duration-diff-adjusted (+ duration-diff (pauses-sum))
+          compound-duration-all (seconds->duration duration-diff-adjusted)
           compound-duration-filtered (dissoc compound-duration-all :w :d)  ; Remove week, days. (Maybe add back if needed one day but it disables showing those two then.)
           ms (when (get-in @state [:running?]) (mod (date-fns/differenceInMilliseconds (get-in @state [:now]) (get-in @state [:start])) 1000))
           compound-duration-plus-ms (assoc compound-duration-filtered :ms ms)
@@ -85,7 +90,6 @@
                        :on-change (fn [e] (reset! title-atom (-> e .-target .-value)))}])
        [:div.flex.flex-row.text-6xl.tracking-wide.leading-none.text-opacity-100.cursor-pointer.select-none
         {:on-click #(swap! state update-in [:ms-visible?] not)}
-        
         [clock/digital-clean {:compound-duration display-compound-duration
                               :ms-placement (get-in @state [:ms-placement])
                               :ms-visible? (get-in @state [:ms-visible?])}]]
@@ -105,6 +109,10 @@
          (if clean?
            [icon/play]
            (if running? [icon/pause] [icon/play]))]]
+       (when (not clean?)
+         [:div.mt-5
+          [:div "Total: " (pauses-sum)]
+          [:div "Previous pauses: " (into [:div ] (map (fn [p] [:div p]) (get-in @state [:pauses])))]])
        
        (when @(get-in @state [:dev?]) [dev-panel [state]])])
     (finally (js/clearInterval timer-fn))))
@@ -131,27 +139,26 @@
   (clj->js {:foo 1 :bar 2})
   (clj->js [:foo "bar" 'baz])
   (clj->js [1 {:foo "bar"} 4])
-  
+
   (.stringify js/JSON (clj->js {:key "value"}))
   (.stringify js/JSON (clj->js (clj->js {"foo" 1 "bar" 2})))
   (.stringify js/JSON (clj->js (clj->js {:foo 1 :bar 2})))
-  
+
   (js/console.log (clj->js {:foo 1 :bar 2})) ; So this does what I want! JS object json.
-  
+
   (date-fns/formatDuration (clj->js {:months 1 :days 2}))
   (date-fns/formatDuration (clj->js {:seconds 55}))
   (date-fns/formatDuration (clj->js {:seconds 5555}))
-  
+
   (date-fns/formatDuration (clj->js {:seconds 5555}) ["minutes" "seconds"])
   (date-fns/formatDuration (clj->js {:minutes 22 :seconds 5555}) ["minutes" "seconds"])
-  
+
   (date-fns/formatDistance (.now js/Date) (.now js/Date))
   (date-fns/formatDistanceStrict (.now js/Date) (.now js/Date) (clj->js {:unit "minute"}))
   (date-fns/formatDistanceStrict (date-fns/addSeconds (.now js/Date) 123213) (.now js/Date) (clj->js {:unit "minute"}))
   (date-fns/formatDistanceStrict (date-fns/addSeconds (.now js/Date) 123213) (.now js/Date) (clj->js {:unit "second"}))
-  
+
   (seconds->duration 56)
   (seconds->duration 60)
   (seconds->duration 61)
-  (seconds->duration 3605)
-  )
+  (seconds->duration 3605))
