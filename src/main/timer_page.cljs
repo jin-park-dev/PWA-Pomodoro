@@ -16,8 +16,8 @@
 (defn timer-simple []
   (reagent/with-let [state (reagent/atom {:start (.now js/Date)
                                           :now (.now js/Date)
-                                          ; :pauses nil ; diff in seconds as vector
-                                          :pauses [1 4 5 1 2 3 31 6 21 424 516 66 1 4 5 1 2 3 31 6 21 424 516 66 1 4 5 1 2 3 31 6 21 424 516 66 1 4 5 1 2 3 31 6 21 424 516 66 1 4 5 1 2 3 31 6 21 424 516 66 1 4 5 1 2 3 31 6 21 424 516 66 1 4 5 1 2 3 31 6 21 424 516 66 1 4 5 1 2 3 31 6 21 424 516 66 1 4 5 1 2 3 31 6 21 424 516 66 1 4 5 1 2 3 31 6 21 424 516 66 1 4 5 1 2 3 31 6 21 424 516 66 1 4 5 1 2 3 31 6 21 424 516 66 ]
+                                          :pauses nil ; diff in seconds as vector
+                                          ; :pauses [1 4 5 1 2 3 31 6 21 424 516 66 1 4 5 1 2 3 31 6 21 424 516 66 1 4 5 1 2 3 31 6 21 424 516 66 1 4 5 1 2 3 31 6 21 424 516 66 1 4 5 1 2 3 31 6 21 424 516 66 1 4 5 1 2 3 31 6 21 424 516 66 1 4 5 1 2 3 31 6 21 424 516 66 1 4 5 1 2 3 31 6 21 424 516 66 1 4 5 1 2 3 31 6 21 424 516 66 1 4 5 1 2 3 31 6 21 424 516 66 1 4 5 1 2 3 31 6 21 424 516 66 1 4 5 1 2 3 31 6 21 424 516 66 ]
 
                                           :clean? true ; Inital state of running not have happened at all. E.g user interaction Clean
                                           :running? false
@@ -106,11 +106,15 @@
                                                   (if running? (fn-pause e) (fn-resume e))))}
          (if (get-in @state [:running?]) [icon/pause] [icon/play])]]
        
-       (when true #_(not clean?)
+       (when (not clean?)
          [:div.mt-5
           [:div.text-center "Last: " [clock/digital-clean-text {:compound-duration compound-duration-previous-pause-length}]]
-          [:div.text-center "Previous pauses (seconds)" ]
-          (into [:div.flex.flex-row.flex-wrap.max-w-xs] (map (fn [time] [:div (str time ", ")]) (get-in @state [:pauses])))])
+          [:div.text-center "Previous pauses" ]
+          (into [:div.flex.flex-row.flex-wrap.max-w-xs]
+                (map (fn [time] [clock/digital-clean-text {:compound-duration (seconds->duration time)}]) (get-in @state [:pauses])))
+          #_(into [:div.flex.flex-row.flex-wrap.max-w-xs]
+                (map (fn [time] [:div (str time ", ")]) (get-in @state [:pauses])))
+          ])
        
        (when @(get-in @state [:dev?]) [dev-panel [state]])])
     (finally (js/clearInterval timer-fn))))
