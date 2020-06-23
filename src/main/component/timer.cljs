@@ -27,3 +27,14 @@
          [:div.flex.flex-row.mr-2 {:key k} [:div v] [:div.text-base.self-end k]]))
       (when (= _ms-placement "right") [:div.text-base.tracking-wide.leading-none.text-opacity-100.mt-2 ms])]
      (when (= _ms-placement "bottom") [:div.text-base.tracking-wide.leading-none.text-opacity-100.mt-2 ms])]))
+
+
+(defn digital-clean-text
+  "No style"
+  [{:keys [compound-duration]}]
+  (let [_compound-duration-filtered (dissoc compound-duration :ms)
+        _compound-duration _compound-duration-filtered]
+    [:div.inline-flex.flex-row
+     (doall
+      (for [[k v] _compound-duration]
+        (when-not (= 0 v) [:div.flex.flex-row.mr-2 {:key k} [:div v] [:div.text-base.self-end k]])))]))
