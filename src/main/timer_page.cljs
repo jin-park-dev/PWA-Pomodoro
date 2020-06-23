@@ -108,8 +108,8 @@
        
        (when (not clean?)
          [:div.mt-5
-          [:div.text-center "Last: " [clock/digital-clean-text {:compound-duration compound-duration-previous-pause-length}]]
-          [:div.text-center "Previous pauses" ]
+          [:div.text-center "Last Duration: " (if (= 0 previous-pause-length) "0s" [clock/digital-clean-text {:compound-duration compound-duration-previous-pause-length}])]
+          [:div.text-center.my-3 "Pauses"]
           (into [:div.flex.flex-row.flex-wrap.max-w-xs]
                 (map (fn [time] [clock/digital-clean-text {:compound-duration (seconds->duration time)}]) (get-in @state [:pauses])))
           #_(into [:div.flex.flex-row.flex-wrap.max-w-xs]
