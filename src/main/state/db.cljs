@@ -21,5 +21,5 @@
                             ; ending up in a mess with one need some, other not.
                             ; So decision to put as much as I can in tailwind and small customization there.
                             :theme {:general (first theme-colors) ; azure as default
-                                    :time {:style "digital-clean-structure"}  ; This can be digital or something else?
+                                    :time {:style "digital-clean"}  ; This can be digital or something else?
                                     }})

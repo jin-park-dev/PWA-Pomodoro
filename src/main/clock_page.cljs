@@ -31,7 +31,7 @@
                      state (reagent/atom {:date-visible? false
                                           :ms-visible? false
                                           :dev? @(rf/subscribe [:dev?])})]
-    [:div#clock-styled-vue.w-full.btn-like.rounded-sm (use-style clock-digital-styled-vue--container-style
+    [:div#clock-styled-vue.w-full.btn-like.rounded (use-style clock-digital-styled-vue--container-style
                                                       {:on-click (fn []
                                                                    (swap! state update-in [:date-visible?] not)
                                                                    (swap! state update-in [:ms-visible?] not))})

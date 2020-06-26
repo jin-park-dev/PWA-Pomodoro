@@ -110,12 +110,17 @@ nav {
     @apply cursor-pointer select-none;
 }
 
-/* Pure formatting without color, expectation of logic (clickable) */
-
+/* Theme digita-clean, delivered through re-frame. */
 /* Possible to get up to down style (this is left to right), more Asian style */
-.digital-clean-structure {
-    @apply flex flex-row tracking-wide leading-none text-6xl;
+.digital-clean {
+    @apply flex flex-row tracking-tighter leading-none text-5xl;
 }
+
+@screen sm {
+    .digital-clean {
+      @apply tracking-wide text-6xl;
+    }
+  }
 
 .digital-vue {
     @apply flex flex-row items-center justify-center h-full tracking-widest leading-tight text-2xl;
