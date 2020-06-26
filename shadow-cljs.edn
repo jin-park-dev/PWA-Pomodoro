@@ -1,6 +1,6 @@
 ;; shadow-cljs configuration
 {:dependencies [[reagent "1.0.0-alpha2"] ; Check latest here - https://clojars.org/reagent
-                [stylefy "2.0.0-rc.1"]
+                [stylefy "2.2.1"]
                 [re-frame "1.0.0-rc2"]
                 [binaryage/devtools "1.0.2"]  ; https://clojars.org/binaryage/devtools - CLJS Auto add this. preloads in watch and compile if they are on the classpath
                 ]
