@@ -386,7 +386,7 @@
        (let [class-bg @(rf/subscribe [:theme/general-bg 100])
              class-text @(rf/subscribe [:theme/general-text 400])
              hover (str "hover:" class-bg)
-             class (join  " " ["mb-3" "rounded" #_"bg-gray-100" hover class-text])]
+             class (join  " " ["mb-3" "rounded" hover class-text])]
          [input/title {:value @title-atom
                        :class class
                        :on-change (fn [e] (reset! title-atom (-> e .-target .-value)))}])
@@ -426,7 +426,7 @@
           [:div "next-compound-duration-plus-ms " next-compound-duration-plus-ms]
           [:div "display-compound-duration " @display-compound-duration]])
 
-       [:div.flex.flex-row
+       [:div.flex.flex-row.-mx-5.sm:mx-0
         [:button#session-decrement.btn.btn-nav.rounded-l-full.rounded-r.self-center.transition-25to100
          (merge {:on-click (fn []
                              (swap! state update-in [:value-next-end] (fn [v] (date-fns/subMinutes v 1)))
