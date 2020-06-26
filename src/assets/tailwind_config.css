@@ -50,7 +50,7 @@
 /* Nav */
 
 nav {
-    @apply border-b-2 border-solid border-gray-500 p-2;
+    @apply border-b-2 border-solid border-gray-500 pb-2;
 }
 
 .nav-container {
@@ -72,6 +72,12 @@ nav {
 .nav-link--active:hover {
     @apply text-black;
 }
+
+@screen sm {
+    nav {
+      @apply p-2;
+    }
+  }
 
 /* Button */
 

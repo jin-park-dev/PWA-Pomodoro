@@ -25,18 +25,18 @@
 (defn root []
   [:> BrowserRouter
    [:div.grid-style.font-body {:class @(rf/subscribe [:theme/general-text 500])}
-    [:nav
+    [:nav.text-sm.sm:text-2xl
      [:ul.nav-container
-      [:li.mr-2.sm:mr-6
+      [:li.mr-0.sm:mr-6
        [:> NavLink {:to "/"
                     :active-class-name "nav-link--active"
                     :exact true
                     :class "nav-btn nav-link"} "Home"]]
-      [:li.mr-2.sm:mr-6
+      [:li.mr-0.sm:mr-6
        [:> NavLink {:to "/clock/"
                     :activeClassName "nav-link--active"
                     :class "nav-btn nav-link"} "Clock"]]
-      [:li.mr-2.sm:mr-6
+      [:li.mr-0.sm:mr-6
        [:> NavLink {:to "/timer/"
                     :activeClassName "nav-link--active"
                     :class "nav-btn nav-link"} "Timer"]]
