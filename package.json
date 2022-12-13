@@ -6,7 +6,7 @@
     "autoprefixer": "^9.8.4",
     "concurrently": "^5.2.0",
     "copyfiles": "^2.3.0",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "postcss-cli": "^7.1.1",
     "shadow-cljs": "2.10.13",
     "tailwindcss": "^1.4.6",
